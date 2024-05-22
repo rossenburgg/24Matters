@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include ('partials/_head.ejs') %>
+    <title>Setup 2FA</title>
+</head>
+<body>
+    <%- include ('partials/_header.ejs') %>
+    <div class="container mt-5">
+        <h2>Setup Two-Factor Authentication (2FA)</h2>
+        <p>Please scan the QR code with your 2FA app and enter the verification code below.</p>
+        <div>
+            <img src="<%= qrCodeUrl %>" alt="QR Code" />
+        </div>
+        <form action="/auth/setup2fa/verify" method="post">
+            <div class="mb-3">
+                <label for="token" class="form-label">Verification Code</label>
+                <input type="text" class="form-control" id="token" name="token" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Verify</button>
+        </form>
+    </div>
+    <%- include ('partials/_footer.ejs') %>
+    <script src="/js/main.js"></script>
+</body>
+</html>

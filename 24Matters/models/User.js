@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
   accountStatus: { type: String, default: 'Standard' },
   balance: { type: Number, default: 0 }, // Added field for balance
   commission: { type: Number, default: 0 }, // Added field for commission
+  twoFactorSecret: { type: String }, // Added field for 2FA
 });
 
 userSchema.pre('save', function(next) {

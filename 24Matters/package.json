@@ -23,6 +23,9 @@
     "express-session": "^1.18.0",
     "moment": "^2.30.1",
     "mongoose": "^8.1.1",
-    "socket.io": "^4.7.5"
+    "nodemailer": "^6.9.13",
+    "qrcode": "^1.5.3",
+    "socket.io": "^4.7.5",
+    "speakeasy": "^2.0.0"
   }
 }
