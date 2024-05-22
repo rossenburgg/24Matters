@@ -4,17 +4,7 @@ const bcrypt = require('bcrypt');
 const userSchema = new mongoose.Schema({
   username: { type: String, unique: true, required: true },
   password: { type: String, required: true },
-  twoFactorSecret: { type: String, default: '' },
-  isTwoFactorEnabled: { type: Boolean, default: false },
-  dashboardWidgets: {
-    type: Map,
-    of: String,
-    default: {}
-  },
-  theme: {
-    type: String,
-    default: 'light' // Assuming 'light' and 'dark' are the two themes
-  }
+  accountStatus: { type: String, default: 'Standard' } // Added accountStatus field
 });
 
 userSchema.pre('save', function(next) {
@@ -23,6 +13,7 @@ userSchema.pre('save', function(next) {
   bcrypt.hash(user.password, 10, (err, hash) => {
     if (err) {
       console.error('Error hashing password:', err);
+      console.error(err.stack); // Enhanced error logging
       return next(err);
     }
     user.password = hash;

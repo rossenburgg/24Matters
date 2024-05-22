@@ -5,13 +5,7 @@ const express = require("express");
 const session = require("express-session");
 const MongoStore = require('connect-mongo');
 const authRoutes = require("./routes/authRoutes");
-const userRoutes = require('./routes/userRoutes'); // Added userRoutes
-const depositRoutes = require('./routes/depositRoutes'); // Import depositRoutes
-const taskRoutes = require('./routes/taskRoutes'); // Import taskRoutes
-const supportRoutes = require('./routes/supportRoutes'); // Import supportRoutes
-const securityRoutes = require('./routes/securityRoutes'); // Import securityRoutes
-const http = require('http');
-const { Server } = require("socket.io");
+const homeRoutes = require('./routes/homeRoutes'); // Added homeRoutes
 
 if (!process.env.DATABASE_URL || !process.env.SESSION_SECRET) {
   console.error("Error: config environment variables not set. Please create/edit .env configuration file.");
@@ -78,25 +72,8 @@ app.use((req, res, next) => {
 // Authentication Routes
 app.use(authRoutes);
 
-// User Routes - Added for user profile API
-app.use(userRoutes);
-
-// Deposit Routes - Added for deposit functionality
-app.use(depositRoutes);
-
-// Task Routes - Added for task management functionality
-app.use(taskRoutes);
-
-// Support Routes - Added for customer support interaction
-app.use(supportRoutes);
-
-// Security Routes - Added for 2FA functionality
-app.use(securityRoutes);
-
-// Root path response
-app.get("/", (req, res) => {
-  res.render("index");
-});
+// Home Routes - Adjusted to serve User Greeting and Status feature at root '/'
+app.use(homeRoutes);
 
 // If no routes handled the request, it's a 404
 app.use((req, res, next) => {
@@ -110,35 +87,6 @@ app.use((err, req, res, next) => {
   res.status(500).send("There was an error serving your request.");
 });
 
-const server = http.createServer(app);
-const io = new Server(server);
-
-io.on('connection', (socket) => {
-  console.log('A user connected');
-
-  // Listen for task updates
-  socket.on('task update', (msg) => {
-    console.log('Task update received:', msg);
-    io.emit('task update', msg);
-  });
-
-  // Listen for balance updates
-  socket.on('balance update', (msg) => {
-    console.log('Balance update received:', msg);
-    io.emit('balance update', msg);
-  });
-
-  // Listen for commission updates
-  socket.on('commission update', (msg) => {
-    console.log('Commission update received:', msg);
-    io.emit('commission update', msg);
-  });
-
-  socket.on('disconnect', () => {
-    console.log('A user disconnected');
-  });
-});
-
-server.listen(port, () => {
+app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
