@@ -11,6 +11,8 @@ const depositRoutes = require('./routes/depositRoutes'); // Import depositRoutes
 const taskRoutes = require('./routes/taskRoutes'); // Import taskRoutes
 const historyRoutes = require('./routes/historyRoutes'); // Import historyRoutes
 const supportRoutes = require('./routes/supportRoutes'); // Import supportRoutes
+const analyticsRoutes = require('./routes/analyticsRoutes'); // Import analyticsRoutes
+const apiRoutes = require('./routes/apiRoutes'); // Import apiRoutes for analytics data
 const User = require('./models/User'); // Import User model
 const http = require('http');
 const { Server } = require("socket.io");
@@ -129,6 +131,12 @@ app.use(historyRoutes);
 
 // Support Routes - Serve customer support page and functionality
 app.use(supportRoutes);
+
+// Analytics Routes - Serve analytics dashboard and functionality
+app.use(analyticsRoutes);
+
+// API Routes - Serve API requests for analytics data
+app.use('/api', apiRoutes); // Correctly prefix API routes with '/api'
 
 // If no routes handled the request, it's a 404
 app.use((req, res, next) => {

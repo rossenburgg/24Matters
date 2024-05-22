@@ -79,3 +79,4 @@ typings/
 
 # TernJS port file
 .tern-port
+.csv

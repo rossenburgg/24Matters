@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/_head.ejs') %>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Load Chart.js -->
+</head>
+<body>
+  <%- include('partials/_header.ejs') %>
+  <div class="container">
+    <h1>Analytics Dashboard</h1>
+    <canvas id="earningsChart"></canvas> <!-- Placeholder for Chart.js graph -->
+    <a href="/analytics/download-report">Download Report</a>
+  </div>
+  <%- include('partials/_footer.ejs') %>
+  <script>
+    const ctx = document.getElementById('earningsChart').getContext('2d');
+    const earningsChart = new Chart(ctx, {
+      type: 'line', // or 'bar', 'pie', etc., depending on your data
+      data: {
+        labels: [], // Populate with labels, e.g., task creation dates
+        datasets: [{
+          label: 'Earnings',
+          data: [], // Populate with data, e.g., earnings from tasks
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    fetch('/api/analytics/data') // Assuming there's an endpoint to fetch analytics data
+      .then(response => response.json())
+      .then(data => {
+        if (data.labels && data.earnings) {
+          console.log('Analytics data loaded successfully');
+          earningsChart.data.labels = data.labels; // Assuming 'data.labels' contains the labels for the x-axis
+          earningsChart.data.datasets[0].data = data.earnings; // Assuming 'data.earnings' contains the earnings data
+          earningsChart.update();
+        } else {
+          console.error('Analytics data is missing labels or earnings');
+          alert('Failed to load analytics data properly.');
+        }
+      })
+      .catch(error => {
+        console.error('Error fetching analytics data:', error);
+        console.error(error.stack);
+        alert('Failed to load analytics data.');
+      });
+  </script>
+</body>
+</html>
