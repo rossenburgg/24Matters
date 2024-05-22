@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/_head.ejs') %>
+  <title>Deposit - 24Matters</title>
+</head>
+<body>
+  <%- include('partials/_header.ejs') %>
+
+  <div class="container mt-5">
+    <h1>Deposit Funds</h1>
+    <p>Your current balance is: <span id="balance"><%= balance %></span> USDT</p>
+    <!-- Deposit Form -->
+    <form id="depositForm">
+      <div class="mb-3">
+        <label for="depositAmount" class="form-label">Amount to Deposit (USDT)</label>
+        <input type="number" class="form-control" id="depositAmount" name="depositAmount" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Deposit</button>
+    </form>
+    <button onclick="window.location='/support';" class="btn btn-info mt-3">Contact Support</button>
+  </div>
+
+  <%- include('partials/_footer.ejs') %>
+  <script src="/js/deposit.js"></script>
+</body>
+</html>

@@ -13,7 +13,9 @@ router.get('/', isAuthenticated, async (req, res) => {
       console.log(`Displaying home page for user: ${user.username}`);
       res.render('home', {
         username: user.username,
-        accountStatus: user.accountStatus
+        accountStatus: user.accountStatus,
+        balance: user.balance, // Pass balance to the view
+        commission: user.commission, // Pass commission to the view
       });
     }
   } catch (error) {

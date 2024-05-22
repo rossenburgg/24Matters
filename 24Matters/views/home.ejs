@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('./partials/_head.ejs') %>
+</head>
+<body>
+  <%- include('./partials/_header.ejs') %>
+  <div class="container mt-5">
+    <h1>Welcome, <%= username %>!</h1>
+    <p>Your account status is: <%= accountStatus %>.</p>
+    <p>Your balance is: <span id="balance"><%= balance %></span> USDT.</p>
+    <p>Your commission is: <span id="commission"><%= commission %></span> USDT.</p>
+  </div>
+  <%- include('./partials/_footer.ejs') %>
+  <script src="/js/main.js"></script>
+  <script src="/js/walletInfo.js"></script>
+</body>
+</html>

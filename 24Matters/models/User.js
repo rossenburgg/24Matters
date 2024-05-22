@@ -4,7 +4,9 @@ const bcrypt = require('bcrypt');
 const userSchema = new mongoose.Schema({
   username: { type: String, unique: true, required: true },
   password: { type: String, required: true },
-  accountStatus: { type: String, default: 'Standard' } // Added accountStatus field
+  accountStatus: { type: String, default: 'Standard' },
+  balance: { type: Number, default: 0 }, // Added field for balance
+  commission: { type: Number, default: 0 }, // Added field for commission
 });
 
 userSchema.pre('save', function(next) {
@@ -13,7 +15,7 @@ userSchema.pre('save', function(next) {
   bcrypt.hash(user.password, 10, (err, hash) => {
     if (err) {
       console.error('Error hashing password:', err);
-      console.error(err.stack); // Enhanced error logging
+      console.error(err.stack);
       return next(err);
     }
     user.password = hash;

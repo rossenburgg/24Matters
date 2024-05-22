@@ -6,6 +6,10 @@ const session = require("express-session");
 const MongoStore = require('connect-mongo');
 const authRoutes = require("./routes/authRoutes");
 const homeRoutes = require('./routes/homeRoutes'); // Added homeRoutes
+const walletInfoRoutes = require('./routes/walletInfoRoutes'); // Import walletInfoRoutes
+const depositRoutes = require('./routes/depositRoutes'); // Import depositRoutes
+const taskRoutes = require('./routes/taskRoutes'); // Import taskRoutes
+const User = require('./models/User'); // Import User model
 
 if (!process.env.DATABASE_URL || !process.env.SESSION_SECRET) {
   console.error("Error: config environment variables not set. Please create/edit .env configuration file.");
@@ -74,6 +78,15 @@ app.use(authRoutes);
 
 // Home Routes - Adjusted to serve User Greeting and Status feature at root '/'
 app.use(homeRoutes);
+
+// Wallet Info Routes - Serve wallet information
+app.use(walletInfoRoutes);
+
+// Deposit Routes - Serve deposit page and functionality
+app.use(depositRoutes);
+
+// Task Routes - Serve task management functionality
+app.use(taskRoutes);
 
 // If no routes handled the request, it's a 404
 app.use((req, res, next) => {
