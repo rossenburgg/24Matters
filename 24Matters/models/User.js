@@ -5,9 +5,10 @@ const userSchema = new mongoose.Schema({
   username: { type: String, unique: true, required: true },
   password: { type: String, required: true },
   accountStatus: { type: String, default: 'Standard' },
-  balance: { type: Number, default: 0 }, // Added field for balance
-  commission: { type: Number, default: 0 }, // Added field for commission
-  twoFactorSecret: { type: String }, // Added field for 2FA
+  balance: { type: Number, default: 0 },
+  commission: { type: Number, default: 0 },
+  twoFactorSecret: { type: String },
+  themePreference: { type: String, default: 'light' }, // Added field for theme preference
 });
 
 userSchema.pre('save', function(next) {

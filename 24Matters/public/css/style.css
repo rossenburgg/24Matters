@@ -1,1 +1,14 @@
 /* Placeholder for custom styles */
+
+/* Add basic styles for light and dark themes */
+body.light {
+  background-color: #fff;
+  color: #000;
+}
+
+body.dark {
+  background-color: #333;
+  color: #fff;
+}
+
+/* Further customization for other elements based on theme can be added here */

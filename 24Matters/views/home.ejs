@@ -3,17 +3,50 @@
 <head>
   <%- include('./partials/_head.ejs') %>
 </head>
-<body>
+<body class="<%= themePreference %>">
   <%- include('./partials/_header.ejs') %>
   <div class="container mt-5">
     <h1>Welcome, <%= username %>!</h1>
     <p>Your account status is: <%= accountStatus %>.</p>
     <p>Your balance is: <span id="balance"><%= balance %></span> USDT.</p>
     <p>Your commission is: <span id="commission"><%= commission %></span> USDT.</p>
+    <div class="theme-selection">
+      <label for="themeSelect">Theme Preference:</label>
+      <select id="themeSelect">
+        <option value="light" <%= themePreference === 'light' ? 'selected' : '' %>>Light</option>
+        <option value="dark" <%= themePreference === 'dark' ? 'selected' : '' %>>Dark</option>
+      </select>
+    </div>
   </div>
   <%- include('./partials/_footer.ejs') %>
   <script src="/js/main.js"></script>
   <script src="/js/walletInfo.js"></script>
   <script src="/js/balanceUpdates.js"></script>
+  <script>
+    document.getElementById('themeSelect').addEventListener('change', function() {
+      const selectedTheme = this.value;
+      fetch('/update-theme', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ theme: selectedTheme }),
+      })
+      .then(response => {
+        if (response.ok) {
+          document.body.className = selectedTheme;
+        } else {
+          alert('Failed to update theme preference.');
+        }
+      })
+      .catch(error => {
+        console.error('Error updating theme preference:', error);
+        alert('Failed to update theme preference.');
+      });
+    });
+
+    // Set initial theme on load
+    document.body.className = '<%= themePreference %>';
+  </script>
 </body>
 </html>
