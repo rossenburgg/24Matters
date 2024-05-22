@@ -7,6 +7,11 @@ const MongoStore = require('connect-mongo');
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require('./routes/userRoutes'); // Added userRoutes
 const depositRoutes = require('./routes/depositRoutes'); // Import depositRoutes
+const taskRoutes = require('./routes/taskRoutes'); // Import taskRoutes
+const supportRoutes = require('./routes/supportRoutes'); // Import supportRoutes
+const securityRoutes = require('./routes/securityRoutes'); // Import securityRoutes
+const http = require('http');
+const { Server } = require("socket.io");
 
 if (!process.env.DATABASE_URL || !process.env.SESSION_SECRET) {
   console.error("Error: config environment variables not set. Please create/edit .env configuration file.");
@@ -79,6 +84,15 @@ app.use(userRoutes);
 // Deposit Routes - Added for deposit functionality
 app.use(depositRoutes);
 
+// Task Routes - Added for task management functionality
+app.use(taskRoutes);
+
+// Support Routes - Added for customer support interaction
+app.use(supportRoutes);
+
+// Security Routes - Added for 2FA functionality
+app.use(securityRoutes);
+
 // Root path response
 app.get("/", (req, res) => {
   res.render("index");
@@ -96,6 +110,35 @@ app.use((err, req, res, next) => {
   res.status(500).send("There was an error serving your request.");
 });
 
-app.listen(port, () => {
+const server = http.createServer(app);
+const io = new Server(server);
+
+io.on('connection', (socket) => {
+  console.log('A user connected');
+
+  // Listen for task updates
+  socket.on('task update', (msg) => {
+    console.log('Task update received:', msg);
+    io.emit('task update', msg);
+  });
+
+  // Listen for balance updates
+  socket.on('balance update', (msg) => {
+    console.log('Balance update received:', msg);
+    io.emit('balance update', msg);
+  });
+
+  // Listen for commission updates
+  socket.on('commission update', (msg) => {
+    console.log('Commission update received:', msg);
+    io.emit('commission update', msg);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('A user disconnected');
+  });
+});
+
+server.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
