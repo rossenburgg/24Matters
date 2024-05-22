@@ -9,7 +9,11 @@ const homeRoutes = require('./routes/homeRoutes'); // Added homeRoutes
 const walletInfoRoutes = require('./routes/walletInfoRoutes'); // Import walletInfoRoutes
 const depositRoutes = require('./routes/depositRoutes'); // Import depositRoutes
 const taskRoutes = require('./routes/taskRoutes'); // Import taskRoutes
+const historyRoutes = require('./routes/historyRoutes'); // Import historyRoutes
+const supportRoutes = require('./routes/supportRoutes'); // Import supportRoutes
 const User = require('./models/User'); // Import User model
+const http = require('http');
+const { Server } = require("socket.io");
 
 if (!process.env.DATABASE_URL || !process.env.SESSION_SECRET) {
   console.error("Error: config environment variables not set. Please create/edit .env configuration file.");
@@ -17,6 +21,8 @@ if (!process.env.DATABASE_URL || !process.env.SESSION_SECRET) {
 }
 
 const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
 const port = process.env.PORT || 3000;
 
 // Middleware to parse request bodies
@@ -73,6 +79,36 @@ app.use((req, res, next) => {
   next();
 });
 
+// Socket.io for real-time communication
+io.on('connection', (socket) => {
+  console.log('A user connected to the support chat');
+  socket.on('disconnect', () => {
+    console.log('User disconnected from the support chat');
+  });
+
+  socket.on('support message', (msg) => {
+    console.log(`Message received: ${msg}`);
+    io.emit('support message', msg);
+  });
+
+  // User-Socket mapping for targeted balance updates
+  socket.on('register', userId => {
+    // Associate the user ID with the socket ID
+    socket.join(userId); // Using rooms to manage user sessions
+    console.log(`User ${userId} registered with socket ID ${socket.id}`);
+  });
+
+  // Listen for balance update requests and emit updates to the specific user
+  socket.on('request balance update', (data) => {
+    console.log(`Balance update requested for user: ${data.userId}`);
+    // Emit the balance update only to sockets in the user's room
+    io.to(data.userId).emit('balance update', { newBalance: data.newBalance });
+  });
+
+  // Set up to emit events for balance and task updates
+  app.set('socketio', io); // Make io accessible in route handlers
+});
+
 // Authentication Routes
 app.use(authRoutes);
 
@@ -88,6 +124,12 @@ app.use(depositRoutes);
 // Task Routes - Serve task management functionality
 app.use(taskRoutes);
 
+// History Routes - Serve transaction history page and functionality
+app.use(historyRoutes);
+
+// Support Routes - Serve customer support page and functionality
+app.use(supportRoutes);
+
 // If no routes handled the request, it's a 404
 app.use((req, res, next) => {
   res.status(404).send("Page not found.");
@@ -100,6 +142,7 @@ app.use((err, req, res, next) => {
   res.status(500).send("There was an error serving your request.");
 });
 
-app.listen(port, () => {
+// Change the listen method to use the http server
+server.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
