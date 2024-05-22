@@ -1,0 +1,126 @@
+/* Main layout */
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #56CCF2, #2F80ED); /* Gradient blue background */
+    color: #333;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Header styles */
+.header {
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+}
+
+/* Betting area */
+.betting-area {
+    background-color: #fff; /* White betting area */
+    padding: 20px;
+    margin-top: 60px; /* Adjust based on header height */
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,.1);
+}
+
+/* Buttons */
+.btn {
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.btn-primary {
+    background-color: #F2C94C; /* Yellow roll button */
+    color: #333;
+}
+
+.btn-secondary {
+    background-color: #EB5757; /* Red for loss */
+    color: #fff;
+}
+
+.btn-success {
+    background-color: #27AE60; /* Green for win */
+    color: #fff;
+}
+
+/* Form inputs */
+input[type="number"] {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: 100%;
+}
+
+/* Utility classes */
+.text-center {
+    text-align: center;
+}
+
+.d-flex {
+    display: flex;
+    justify-content: space-around;
+}
+
+.mb-3 {
+    margin-bottom: 16px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* Auto Bet Tab */
+#autoBetTab {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    margin-top: 20px;
+}
+
+#autoBetStatus {
+    margin-top: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .betting-area {
+        margin-top: 80px; /* Increase top margin on smaller screens */
+    }
+
+    .btn {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
+    .d-flex {
+        flex-direction: column;
+    }
+
+    .d-flex button {
+        margin-bottom: 10px;
+    }
+}
+
+/* Footer styles */
+.footer a {
+  margin: 0 10px;
+  color: #000; /* Adjust as per color scheme */
+}
+
+.footer a:hover {
+  text-decoration: none;
+  color: #555; /* Adjust as per color scheme */
+}
+
+.modal-placeholder {
+  display: none; /* Placeholder for future modal implementation */
+}

@@ -1,0 +1,37 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "node server.js",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@apollo/client": "^3.9.11",
+    "@graphql-tools/merge": "^9.0.3",
+    "@react-native-async-storage/async-storage": "^1.23.1",
+    "apollo-server-express": "^3.13.0",
+    "axios": "^1.6.8",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "expo-image-picker": "^14.7.1",
+    "express": "^4.19.2",
+    "express-async-handler": "^1.2.0",
+    "express-validator": "^7.0.1",
+    "graphql": "^15.8.0",
+    "graphql-subscriptions": "^2.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "lodash": "^4.17.21",
+    "mongoose": "^8.3.1",
+    "mongoose-autopopulate": "^1.1.0",
+    "multer": "^1.4.5-lts.1",
+    "react-native-reconnecting-websocket": "^1.0.3",
+    "subscriptions-transport-ws": "^0.11.0"
+  }
+}

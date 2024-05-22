@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<%- include('partials/_head.ejs', { nonce: locals.nonce }) %>
+<body>
+<%- include('partials/_header.ejs') %>
+<main role="main" class="container mt-4">
+    <h2>Dashboard</h2>
+    <div id="gameHistory"></div>
+    <div>
+        <h3>Live Stats</h3>
+        <p>Wagered: <span id="wagered">0</span></p>
+        <p>Profit: <span id="profit">0</span></p>
+        <p>Wins: <span id="wins">0</span></p>
+        <p>Losses: <span id="losses">0</span></p>
+    </div>
+    <div class="bet-history-section">
+        <ul class="nav nav-tabs">
+            <li class="nav-item"><a class="nav-link active" href="#myBets" data-history-type="myBets">My Bets</a></li>
+            <li class="nav-item"><a class="nav-link" href="#allBets" data-history-type="allBets">All Bets</a></li>
+            <li class="nav-item"><a class="nav-link" href="#highRollers" data-history-type="highRollers">High Rollers</a></li>
+            <li class="nav-item"><a class="nav-link" href="#races" data-history-type="races">Races</a></li>
+        </ul>
+        <div class="tab-content mt-3">
+            <table class="table table-striped" id="betHistoryTable">
+                <thead>
+                    <tr>
+                        <th>Bet ID</th>
+                        <th>User</th>
+                        <th>Time</th>
+                        <th>Bet</th>
+                        <th>Multiplier</th>
+                        <th>Result</th>
+                        <th>Payout</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Bet history rows will be dynamically inserted here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+</body>
+<%- include('partials/_footer.ejs') %>
+<script src="/js/dashboard.js" nonce="<%= locals.nonce %>"></script>
+<script src="/js/liveStats.js" nonce="<%= locals.nonce %>"></script>
+<script src="/js/betHistory.js" nonce="<%= locals.nonce %>"></script>
+</html>
