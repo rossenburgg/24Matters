@@ -65,6 +65,16 @@
         </div>
       </div>
     </div>
+    <div class="announcements-section mt-5">
+      <h2>Announcements</h2>
+      <% announcements.forEach(function(announcement) { %>
+        <div class="announcement mb-3">
+          <h3><%= announcement.title %></h3>
+          <p><%= announcement.content %></p>
+          <p>Posted on: <%= announcement.createdAt.toDateString() %></p>
+        </div>
+      <% }); %>
+    </div>
   </div>
   <%- include('./partials/_footer.ejs') %>
   <script src="/js/main.js"></script>

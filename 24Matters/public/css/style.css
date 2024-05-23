@@ -12,3 +12,18 @@ body.dark {
 }
 
 /* Further customization for other elements based on theme can be added here */
+
+@media (max-width: 768px) {
+  /* Completely hide the sidebar on mobile devices */
+  .admin-sidebar {
+    display: none;
+  }
+
+  /* Styles for floating drawer icon on mobile devices */
+  .drawer-toggle-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1050; /* Ensure it's above other content */
+  }
+}

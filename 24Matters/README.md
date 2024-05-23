@@ -1,17 +1,17 @@
 # 24Matters
 
-24Matters is a comprehensive cryptocurrency management platform that provides a wide array of features designed to give users control over their cryptocurrency assets. From real-time balance tracking and task management for earning cryptocurrency, to transaction history viewing and customer support, 24Matters offers a secure and user-friendly environment for cryptocurrency enthusiasts.
+24Matters is a comprehensive cryptocurrency management platform designed to provide users with a wide range of functionalities to manage their cryptocurrency assets efficiently. The platform offers features such as real-time wallet information display, task management for earning cryptocurrency, transaction history viewing, and customer support, all within a secure and user-friendly environment.
 
 ## Overview
 
-The platform is built on a modern tech stack that includes Node.js and Express for backend services, MongoDB for database management, and Socket.IO for real-time communication between the server and clients. It follows a modular architecture that makes the system flexible and scalable, with a focus on security features like two-factor authentication (2FA) to protect user accounts.
+The platform is built using Node.js and Express for the backend, MongoDB for database management, and Socket.IO for real-time communication. It follows a modular architecture, ensuring flexibility and scalability. Security is a priority, with features like two-factor authentication (2FA) to protect user accounts.
 
 ## Features
 
 - **User Account Management**: Secure registration, login, and session management.
 - **Real-time Wallet Information**: Displays current balances and commissions in USDT.
-- **Task Management**: Engage with tasks to earn cryptocurrency, with details on earnings and commissions.
-- **Transaction History**: Comprehensive logs of deposits and tasks completed.
+- **Task Management**: Engage with tasks to earn cryptocurrency, with earnings and commissions details.
+- **Transaction History**: View logs of deposits and tasks completed.
 - **Customer Support**: Integrated support system for account and transaction inquiries.
 - **Security**: Two-factor authentication and real-time alerts for account activity.
 - **Analytics and Reporting**: Dashboard for performance metrics and downloadable reports.

@@ -2,12 +2,14 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const Item = require('../models/Item'); // Required for fetching items
+const Announcement = require('../models/Announcement'); // Import the Announcement model
 const { isAuthenticated } = require('./middleware/authMiddleware');
 
 router.get('/', isAuthenticated, async (req, res) => {
   try {
     const user = await User.findById(req.session.userId).exec();
     const items = await Item.find({}).exec(); // Fetching all items from the database
+    const announcements = await Announcement.find({}).sort({ createdAt: -1 }).exec(); // Fetching all announcements from the database
     if (!user) {
       console.log("Redirecting to login, user not found.");
       res.redirect('/login');
@@ -21,11 +23,12 @@ router.get('/', isAuthenticated, async (req, res) => {
         themePreference: user.themePreference,
         user: user, // Pass the entire user object to the view
         appBaseUrl: process.env.APP_BASE_URL, // Make appBaseUrl available to the view
-        items: items // Passing items to the view
+        items: items, // Passing items to the view
+        announcements: announcements // Passing announcements to the view
       });
     }
   } catch (error) {
-    console.error(`Error fetching user and items for home page: ${error.message}`);
+    console.error(`Error fetching user, items, and announcements for home page: ${error.message}`);
     console.error(error.stack);
     res.status(500).send('Internal Server Error');
   }

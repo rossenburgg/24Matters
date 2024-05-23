@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/_head.ejs') %>
+  <title>Admin - Pending Purchases</title>
+</head>
+<body>
+  <%- include('../partials/adminHeader.ejs') %>
+  <div class="container mt-5">
+    <h1>Pending Purchases</h1>
+    <div class="list-group">
+      <% if (pendingPurchases && pendingPurchases.length > 0) { %>
+        <% pendingPurchases.forEach(function(purchase) { %>
+          <div class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1">Item: <%= purchase.itemId.name %></h5>
+              <small>Purchase Date: <%= new Date(purchase.createdAt).toDateString() %></small>
+            </div>
+            <p class="mb-1">Price: <%= purchase.itemId.price %> USDT</p>
+            <p class="mb-1">Buyer: <%= purchase.userId.username %></p>
+            <button class="btn btn-success btn-sm confirm-purchase" data-purchase-id="<%= purchase._id %>">Confirm</button>
+            <button class="btn btn-danger btn-sm reject-purchase" data-purchase-id="<%= purchase._id %>">Reject</button>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <p>No pending purchases.</p>
+      <% } %>
+    </div>
+  </div>
+  <%- include('../partials/_footer.ejs') %>
+  <script src="/js/adminPurchases.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.confirm-purchase').forEach(button => {
+        button.addEventListener('click', function() {
+          const purchaseId = this.dataset.purchaseId;
+          fetch(`/admin/purchase/${purchaseId}/confirm`, { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                alert('Purchase confirmed successfully.');
+                window.location.reload();
+              } else {
+                alert('Failed to confirm purchase.');
+              }
+            })
+            .catch(error => {
+              console.error('Error confirming purchase:', error);
+              alert('Error confirming purchase.');
+            });
+        });
+      });
+
+      document.querySelectorAll('.reject-purchase').forEach(button => {
+        button.addEventListener('click', function() {
+          const purchaseId = this.dataset.purchaseId;
+          fetch(`/admin/purchase/${purchaseId}/reject`, { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                alert('Purchase rejected successfully.');
+                window.location.reload();
+              } else {
+                alert('Failed to reject purchase.');
+              }
+            })
+            .catch(error => {
+              console.error('Error rejecting purchase:', error);
+              alert('Error rejecting purchase.');
+            });
+        });
+      });
+    });
+  </script>
+</body>
+</html>
