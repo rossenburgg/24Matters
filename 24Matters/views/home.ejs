@@ -22,12 +22,57 @@
       <p><%= `${appBaseUrl}/register?referral=${user.referralCode}` %></p>
       <h4>Your Rewards: <%= user.rewards %></h4>
     </div>
+    <div class="items-grid mt-4">
+      <div class="row">
+        <% items.forEach(function(item) { %>
+          <% if (item.status === "available") { %>
+            <div class="col-md-4 mb-4">
+              <div class="card">
+                <img src="<%= item.picture %>" class="card-img-top" alt="<%= item.name %>">
+                <div class="card-body">
+                  <h5 class="card-title"><%= item.name %></h5>
+                  <p class="card-text">Price: <%= item.price %> USDT</p>
+                  <p class="card-text">Total Amount: <%= item.totalAmount %> USDT</p>
+                  <p class="card-text">Commission: <%= item.commission %> USDT</p>
+                  <!-- Button to trigger modal -->
+                  <button type="button" class="btn btn-primary item-details-button" data-bs-toggle="modal" data-bs-target="#itemDetailsModal" data-item-id="<%= item._id %>">
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </div>
+          <% } %>
+        <% }); %>
+      </div>
+    </div>
+    <!-- Modal Structure -->
+    <div class="modal fade" id="itemDetailsModal" tabindex="-1" aria-labelledby="itemDetailsModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="itemDetailsModalLabel">Item Details</h5>
+            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <!-- Item details will be populated here by modalItemDetails.js -->
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-success">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
   <%- include('./partials/_footer.ejs') %>
   <script src="/js/main.js"></script>
   <script src="/js/walletInfo.js"></script>
   <script src="/js/balanceUpdates.js"></script>
+  <script src="/js/modalItemDetails.js"></script>
   <script>
+    
     document.getElementById('themeSelect').addEventListener('change', function() {
       const selectedTheme = this.value;
       fetch('/update-theme', {
@@ -52,6 +97,16 @@
 
     // Set initial theme on load
     document.body.className = '<%= themePreference %>';
+
+    var modalElement = document.getElementById('itemDetailsModal');
+    modalElement.addEventListener('hidden.bs.modal', function (event) {
+      var backdrop = document.querySelector('.modal-backdrop');
+      if (backdrop) {
+        backdrop.remove();
+      }
+      // Enable scrolling on the body after the modal is closed
+      document.body.style.overflow = '';
+    });
   </script>
 </body>
 </html>

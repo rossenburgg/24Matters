@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('./partials/_head.ejs') %>
+  <title>Admin - Pending Purchases</title>
+</head>
+<body>
+  <%- include('./partials/_header.ejs') %>
+  <div class="container mt-5">
+    <h1>Pending Purchases</h1>
+    <div class="list-group">
+      <% if (purchases && purchases.length > 0) { %>
+        <% purchases.forEach(function(purchase) { %>
+          <div class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1">Item: <%= purchase.item.name %></h5>
+              <small>Purchase Date: <%= purchase.createdAt.toDateString() %></small>
+            </div>
+            <p class="mb-1">Price: <%= purchase.item.price %> USDT</p>
+            <p class="mb-1">Buyer: <%= purchase.user.username %></p>
+            <button class="btn btn-success btn-sm" onclick="confirmPurchase('<%= purchase._id %>')">Confirm</button>
+            <button class="btn btn-danger btn-sm" onclick="rejectPurchase('<%= purchase._id %>')">Reject</button>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <p>No pending purchases.</p>
+      <% } %>
+    </div>
+  </div>
+  <%- include('./partials/_footer.ejs') %>
+  <script src="/js/adminPurchases.js"></script>
+  <script>
+    function confirmPurchase(purchaseId) {
+      fetch(`/admin/purchase/${purchaseId}/confirm`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            window.location.reload();
+          } else {
+            alert('Failed to confirm purchase.');
+          }
+        })
+        .catch(error => {
+          console.error('Error confirming purchase:', error);
+          alert('Error confirming purchase.');
+        });
+    }
+
+    function rejectPurchase(purchaseId) {
+      fetch(`/admin/purchase/${purchaseId}/reject`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            window.location.reload();
+          } else {
+            alert('Failed to reject purchase.');
+          }
+        })
+        .catch(error => {
+          console.error('Error rejecting purchase:', error);
+          alert('Error rejecting purchase.');
+        });
+    }
+  </script>
+</body>
+</html>
