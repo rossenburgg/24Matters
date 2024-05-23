@@ -1,5 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const itemsContainer = document.querySelector('.items-grid');
+    const itemsContainer = document.querySelector('.js-shuffle');
+
+    if (!itemsContainer) {
+        console.error('No element found with the class "js-shuffle".');
+        return;
+    }
 
     itemsContainer.addEventListener('click', function(event) {
         const button = event.target.closest('.item-details-button');
@@ -26,43 +31,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p>Task Code: ${data.uniqueCode}</p>
                         <img src="${data.picture}" class="img-fluid" alt="${data.name}">
                     `;
-                    modalFooter.innerHTML = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                             <button type="button" class="btn btn-success" id="purchaseButton" data-item-id="${data._id}">Purchase</button>`;
+                    modalFooter.innerHTML = `
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-success" id="purchaseButton" data-item-id="${data._id}">Purchase</button>
+                    `;
                     var myModal = new bootstrap.Modal(document.getElementById('itemDetailsModal'));
                     myModal.show();
 
-                    document.getElementById('purchaseButton').addEventListener('click', function() {
-                        const itemId = this.getAttribute('data-item-id');
-                        fetch(`/api/purchase/${itemId}`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Failed to process purchase.');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            console.log('Purchase successful:', data.message);
-                            toastr.success(data.message);
-                            if (data.newBalance !== undefined) {
-                                document.getElementById('balance').textContent = data.newBalance + ' USDT';
-                            }
-                            myModal.hide();
-                        })
-                        .catch(error => {
-                            console.error('Error processing purchase:', error);
-                            toastr.error('Failed to process purchase.', 'Error', {
-                                closeButton: true,
-                                progressBar: true,
-                                positionClass: 'toast-top-right',
-                                timeOut: 5000
-                            });
-                        });
-                    });
+                    // Remove any previous event listener to avoid duplicates
+                    const purchaseButton = document.getElementById('purchaseButton');
+                    purchaseButton.removeEventListener('click', handlePurchase);
+                    purchaseButton.addEventListener('click', handlePurchase);
                 })
                 .catch(error => {
                     console.error('Error fetching item details:', error);
@@ -75,4 +54,39 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         }
     });
+
+    function handlePurchase() {
+        const itemId = this.getAttribute('data-item-id');
+        fetch(`/api/purchase/${itemId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to process purchase.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Purchase successful:', data.message);
+            toastr.success(data.message);
+            if (data.newBalance !== undefined) {
+                document.getElementById('balance').textContent = data.newBalance + ' USDT';
+            }
+            var myModalEl = document.getElementById('itemDetailsModal');
+            var modal = bootstrap.Modal.getInstance(myModalEl);
+            modal.hide();
+        })
+        .catch(error => {
+            console.error('Error processing purchase:', error);
+            toastr.error('Failed to process purchase.', 'Error', {
+                closeButton: true,
+                progressBar: true,
+                positionClass: 'toast-top-right',
+                timeOut: 5000
+            });
+        });
+    }
 });

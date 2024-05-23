@@ -6,29 +6,130 @@
 <body class="<%= themePreference %>">
   <%- include('./partials/_header.ejs') %>
   <div class="container mt-5">
-    <h1>Welcome, <%= username %>!</h1>
-    <p>Your account status is: <%= accountStatus %>.</p>
-    <p>Your balance is: <span id="balance"><%= balance %></span> USDT.</p>
-    <p>Your commission is: <span id="commission"><%= commission %></span> USDT.</p>
-    <div class="theme-selection">
-      <label for="themeSelect">Theme Preference:</label>
-      <select id="themeSelect">
-        <option value="light" <%= themePreference === 'light' ? 'selected' : '' %>>Light</option>
-        <option value="dark" <%= themePreference === 'dark' ? 'selected' : '' %>>Dark</option>
-      </select>
+    <!-- Content -->
+<div class="container ">
+  <!-- Page Header -->
+<div class="container ">
+  <div class="page-header">
+    <!-- Profile Cover -->
+    <div class="profile-cover">
+      <div class="profile-cover-img-wrapper ">
+        <img class="profile-cover-img" src="/img/1920x400/img1.jpg" alt="Image Description">
+      </div>
     </div>
-    <div>
-      <h3>Your Referral Link:</h3>
-      <p><%= `${appBaseUrl}/register?referral=${user.referralCode}` %></p>
-      <h4>Your Rewards: <%= user.rewards %></h4>
+    <!-- End Profile Cover -->
+
+    <!-- Media -->
+    <div class="d-sm-flex align-items-lg-center pt-1 px-3 pb-3">
+      <div class="flex-shrink-0 mb-2 mb-sm-0 me-4">
+        <img class="avatar avatar-xl avatar-circle" src="/img/160x160/img3.jpg" alt="Image Description">
+      </div>
+
+      <div class="flex-grow-1">
+        <div class="row">
+          <div class="col-md mb-3 mb-md-0">
+            <h1 class="h2 mb-1">Welcome, <%= username %>!
+              <picture>
+              <source srcset="https://fonts.gstatic.com/s/e/notoemoji/latest/1f44b/512.webp" type="image/webp">
+              <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f44b/512.gif" alt="👋" width="32" height="32">
+              </picture>
+            </h1>
+
+            <!-- Rating -->
+            <div class="d-flex gap-1">
+            
+              <span class="fw-semibold text-dark ms-1">Balance: <span id="balance"><%= balance %></span> USDT</span>
+              
+            </div>
+            <span class="fw-semibold text-dark ms-1">Status: <%= accountStatus %></span>
+            <p class="fw-semibold text-dark ms-1">Commission: <span id="commission"><%= commission %></span> USDT</p>
+            <p class="fw-semibold text-dark ms-1">Referral Rewards: <%= user.rewards %></p>
+
+
+            <!-- End Rating -->
+          </div>
+          <!-- End Col -->
+
+          <div class="col-md-auto align-self-md-end">
+            <div class="d-grid d-sm-flex gap-2">
+              <a class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#dailyrewardmodal">Daily rewards</a>
+              <div id="dailyrewardmodal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dailyrewardmodal" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="dailyrewardmodal">Daily reward</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="display: flex; flex-direction: column; align-items: center;">
+                      <img src="/svg/illustrations/oc-money-profits.svg" />
+                      <p style="text-align: center;">Daily reward ready!</p>
+                      <a class="btn btn-primary">Claim daily reward</a>
+                    </div>
+                  
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-white" data-bs-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <a class="btn btn-outline-primary" href="#">
+                <i class="bi-person-plus-fill me-1"></i> Settings
+              </a>
+            </div>
+          </div>
+          <!-- End Col -->
+        </div>
+        <!-- End Row -->
+      </div>
     </div>
-    <div class="items-grid mt-4">
-      <div class="row">
+    <!-- End Media -->
+  </div>
+</div>
+<!-- End Page Header -->
+ 
+
+    <!-- Card Grid -->
+    <div class="container content-space-b-2 content-space-b-lg-3 mt-5">
+      <!-- Nav Scroller -->
+      <div class="js-nav-scroller hs-nav-scroller-horizontal mb-7">
+        <span class="hs-nav-scroller-arrow-prev" style="display: none;">
+          <a class="hs-nav-scroller-arrow-link" href="javascript:;">
+            <i class="bi-chevron-left"></i>
+          </a>
+        </span>
+        <span class="hs-nav-scroller-arrow-next" style="display: none;">
+          <a class="hs-nav-scroller-arrow-link" href="javascript:;">
+            <i class="bi-chevron-right"></i>
+          </a>
+        </span>
+        <!-- Nav -->
+        <ul class="js-filter-options nav nav-segment nav-pills d-flex mx-auto" style="max-width: 30rem;">
+          <li class="nav-item">
+            <a class="nav-link active" href="javascript:;" data-group="all">All</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="javascript:;" data-group="branding">Branding</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="javascript:;" data-group="product">Product</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="javascript:;" data-group="design">Design</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="javascript:;" data-group="illustration">Illustration</a>
+          </li>
+        </ul>
+        <!-- End Nav -->
+      </div>
+      <!-- End Nav Scroller -->
+
+      <div class="js-shuffle row row-cols-1 row-cols-sm-2 row-cols-md-3">
         <% items.forEach(function(item) { %>
           <% if (item.status === "available") { %>
-            <div class="col-md-4 mb-4">
-              <div class="card">
-                <img src="<%= item.picture %>" class="card-img-top" alt="<%= item.name %>">
+            <div class="js-shuffle-item col mb-5" data-groups='["all", "<%= item.category %>"]'>
+              <a class="card card-flush card-transition" href="#">
+                <img class="card-img-top" src="<%= item.picture %>" alt="<%= item.name %>">
                 <div class="card-body">
                   <h5 class="card-title"><%= item.name %></h5>
                   <p class="card-text">Price: <%= item.price %> USDT</p>
@@ -39,12 +140,32 @@
                     View Details
                   </button>
                 </div>
-              </div>
+              </a>
             </div>
           <% } %>
         <% }); %>
       </div>
+      <!-- End Row -->
     </div>
+    <!-- End Card Grid -->
+
+
+   
+    
+    <div class="theme-selection">
+      <label for="themeSelect">Theme Preference:</label>
+      <select id="themeSelect">
+        <option value="light" <%= themePreference === 'light' ? 'selected' : '' %>>Light</option>
+        <option value="dark" <%= themePreference === 'dark' ? 'selected' : '' %>>Dark</option>
+      </select>
+    </div>
+
+    <div>
+      <h3>Your Referral Link:</h3>
+      <p><%= `${appBaseUrl}/register?referral=${user.referralCode}` %></p>
+      <h4>Your Rewards: <%= user.rewards %></h4>
+    </div>
+
     <!-- Modal Structure -->
     <div class="modal fade" id="itemDetailsModal" tabindex="-1" aria-labelledby="itemDetailsModalLabel" aria-hidden="true">
       <div class="modal-dialog">
@@ -65,6 +186,7 @@
         </div>
       </div>
     </div>
+
     <div class="announcements-section mt-5">
       <h2>Announcements</h2>
       <% announcements.forEach(function(announcement) { %>
@@ -76,46 +198,73 @@
       <% }); %>
     </div>
   </div>
+  
   <%- include('./partials/_footer.ejs') %>
+
+  <!-- JS Plugins Init. -->
   <script src="/js/main.js"></script>
   <script src="/js/walletInfo.js"></script>
   <script src="/js/balanceUpdates.js"></script>
   <script src="/js/modalItemDetails.js"></script>
+  <script src="/vendor/shufflejs/dist/shuffle.js"></script>
+  <script src="/vendor/hs-nav-scroller/dist/hs-nav-scroller.min.js"></script>
+  <script src="/vendor/typed.js/lib/typed.min.js"></script>
   <script>
-    
-    document.getElementById('themeSelect').addEventListener('change', function() {
-      const selectedTheme = this.value;
-      fetch('/update-theme', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ theme: selectedTheme }),
-      })
-      .then(response => {
-        if (response.ok) {
-          document.body.className = selectedTheme;
-        } else {
-          alert('Failed to update theme preference.');
-        }
-      })
-      .catch(error => {
-        console.error('Error updating theme preference:', error);
-        alert('Failed to update theme preference.');
+     (function() {
+    // INITIALIZATION OF TEXT ANIMATION (TYPING)
+    // =======================================================
+    HSCore.components.HSTyped.init('.js-text-animation')
+  });
+    document.addEventListener('DOMContentLoaded', function() {
+      new HsNavScroller('.js-nav-scroller');
+      const shuffleInstance = new Shuffle(document.querySelector('.js-shuffle'), {
+        itemSelector: '.js-shuffle-item',
+        speed: 500
       });
-    });
 
-    // Set initial theme on load
-    document.body.className = '<%= themePreference %>';
+      document.querySelector('.js-filter-options').addEventListener('click', function(event) {
+        if (event.target.classList.contains('nav-link')) {
+          const filterGroup = event.target.getAttribute('data-group');
+          shuffleInstance.filter(filterGroup === 'all' ? Shuffle.ALL_ITEMS : filterGroup);
+          event.target.classList.add('active');
+          Array.from(event.target.parentNode.children).forEach(sibling => sibling.firstElementChild.classList.remove('active'));
+        }
+      });
 
-    var modalElement = document.getElementById('itemDetailsModal');
-    modalElement.addEventListener('hidden.bs.modal', function (event) {
-      var backdrop = document.querySelector('.modal-backdrop');
-      if (backdrop) {
-        backdrop.remove();
-      }
-      // Enable scrolling on the body after the modal is closed
-      document.body.style.overflow = '';
+      document.getElementById('themeSelect').addEventListener('change', function() {
+        const selectedTheme = this.value;
+        fetch('/update-theme', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ theme: selectedTheme }),
+        })
+        .then(response => {
+          if (response.ok) {
+            document.body.className = selectedTheme;
+          } else {
+            alert('Failed to update theme preference.');
+          }
+        })
+        .catch(error => {
+          console.error('Error updating theme preference:', error);
+          alert('Failed to update theme preference.');
+        });
+      });
+
+      // Set initial theme on load
+      document.body.className = '<%= themePreference %>';
+
+      var modalElement = document.getElementById('itemDetailsModal');
+      modalElement.addEventListener('hidden.bs.modal', function (event) {
+        var backdrop = document.querySelector('.modal-backdrop');
+        if (backdrop) {
+          backdrop.remove();
+        }
+        // Enable scrolling on the body after the modal is closed
+        document.body.style.overflow = '';
+      });
     });
   </script>
 </body>
