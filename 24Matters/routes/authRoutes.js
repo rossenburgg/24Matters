@@ -20,8 +20,30 @@ router.get('/auth/register', (req, res) => {
 
 router.post('/auth/register', async (req, res) => {
   try {
-    const { username, password } = req.body;
-    const newUser = await User.create({ username, password });
+    const { username, phone, password, confirmPassword, gender, referralCode, termsAccepted } = req.body;
+    if (password !== confirmPassword) {
+      return res.status(400).send('Passwords do not match.');
+    }
+    if (!termsAccepted || termsAccepted !== 'on') {
+      return res.status(400).send('You must accept the terms and conditions.');
+    }
+    const existingUser = await User.findOne({ $or: [{ username }, { phone }] });
+    if (existingUser) {
+      return res.status(400).send('User with the given username or phone already exists.');
+    }
+    let referringUser = null;
+    if (referralCode) {
+      referringUser = await User.findOne({ referralCode });
+      if (!referringUser) {
+        return res.status(400).send('Invalid referral code.');
+      }
+    }
+    const newUser = await User.create({ username, phone, password, gender, termsAccepted: true });
+    if (referringUser) {
+      referringUser.rewards += 10; // Adjust reward value as per your logic
+      referringUser.referrals.push(newUser._id);
+      await referringUser.save();
+    }
     res.redirect('/auth/setup2fa'); // Redirect to 2FA setup instead of login
   } catch (error) {
     console.error('Registration error:', error);

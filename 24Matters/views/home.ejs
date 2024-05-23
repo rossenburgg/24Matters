@@ -17,6 +17,11 @@
         <option value="dark" <%= themePreference === 'dark' ? 'selected' : '' %>>Dark</option>
       </select>
     </div>
+    <div>
+      <h3>Your Referral Link:</h3>
+      <p><%= `${appBaseUrl}/register?referral=${user.referralCode}` %></p>
+      <h4>Your Rewards: <%= user.rewards %></h4>
+    </div>
   </div>
   <%- include('./partials/_footer.ejs') %>
   <script src="/js/main.js"></script>

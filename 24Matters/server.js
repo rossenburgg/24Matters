@@ -14,6 +14,7 @@ const supportRoutes = require('./routes/supportRoutes'); // Import supportRoutes
 const analyticsRoutes = require('./routes/analyticsRoutes'); // Import analyticsRoutes
 const apiRoutes = require('./routes/apiRoutes'); // Import apiRoutes for analytics data
 const userSettingsRoutes = require('./routes/userSettingsRoutes'); // Import userSettingsRoutes
+const referralRoutes = require('./routes/referralRoutes'); // Import referralRoutes
 const User = require('./models/User'); // Import User model
 const http = require('http');
 const { Server } = require("socket.io");
@@ -82,6 +83,9 @@ app.use((req, res, next) => {
   next();
 });
 
+// Make appBaseUrl available to all views
+app.locals.appBaseUrl = process.env.APP_BASE_URL;
+
 // Socket.io for real-time communication
 io.on('connection', (socket) => {
   console.log('A user connected to the support chat');
@@ -141,6 +145,9 @@ app.use('/api', apiRoutes); // Correctly prefix API routes with '/api'
 
 // User Settings Routes - Serve routes for user settings like theme preference
 app.use(userSettingsRoutes);
+
+// Referral Routes - Serve referral system functionality
+app.use(referralRoutes);
 
 // If no routes handled the request, it's a 404
 app.use((req, res, next) => {

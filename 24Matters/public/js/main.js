@@ -25,4 +25,26 @@ document.addEventListener('DOMContentLoaded', () => {
       socket.connect();
     }, 1000); // Attempt to reconnect after 1 second
   });
+
+  // Form validation for registration
+  const registrationForm = document.querySelector('#registrationForm');
+  if (registrationForm) {
+    registrationForm.addEventListener('submit', (e) => {
+      const password = document.querySelector('#password').value;
+      const confirmPassword = document.querySelector('#confirmPassword').value;
+      const termsAccepted = document.querySelector('#termsAccepted').checked;
+
+      if (password !== confirmPassword) {
+        e.preventDefault(); // Prevent form submission
+        alert('Passwords do not match.');
+        console.error('Form submission error: Passwords do not match.');
+      }
+
+      if (!termsAccepted) {
+        e.preventDefault(); // Prevent form submission
+        alert('You must accept the terms and conditions.');
+        console.error('Form submission error: Terms and conditions not accepted.');
+      }
+    });
+  }
 });

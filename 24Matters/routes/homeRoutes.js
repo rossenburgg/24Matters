@@ -14,12 +14,15 @@ router.get('/', isAuthenticated, async (req, res) => {
       res.render('home', {
         username: user.username,
         accountStatus: user.accountStatus,
-        balance: user.balance, // Pass balance to the view
-        commission: user.commission, // Pass commission to the view
+        balance: user.balance,
+        commission: user.commission,
+        themePreference: user.themePreference,
+        user: user, // Pass the entire user object to the view
+        appBaseUrl: process.env.APP_BASE_URL // Make appBaseUrl available to the view
       });
     }
   } catch (error) {
-    console.error(`Error fetching user: ${error.message}`);
+    console.error(`Error fetching user for home page: ${error.message}`);
     console.error(error.stack);
     res.status(500).send('Internal Server Error');
   }
