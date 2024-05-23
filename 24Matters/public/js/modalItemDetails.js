@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const itemsContainer = document.querySelector('.items-grid'); // Attaching the event listener to a static parent element
+    const itemsContainer = document.querySelector('.items-grid');
 
     itemsContainer.addEventListener('click', function(event) {
-        const button = event.target.closest('.item-details-button'); // Using event delegation to handle clicks on dynamically added buttons
+        const button = event.target.closest('.item-details-button');
         if (button) {
             const itemId = button.getAttribute('data-item-id');
             fetch(`/api/item/${itemId}`)
@@ -26,14 +26,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         <p>Task Code: ${data.uniqueCode}</p>
                         <img src="${data.picture}" class="img-fluid" alt="${data.name}">
                     `;
-                    // Update the modal footer to include the Purchase button
                     modalFooter.innerHTML = `<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                                              <button type="button" class="btn btn-success" id="purchaseButton" data-item-id="${data._id}">Purchase</button>`;
-                    // Showing the modal using Bootstrap's modal method
                     var myModal = new bootstrap.Modal(document.getElementById('itemDetailsModal'));
                     myModal.show();
 
-                    // Add event listener for the Purchase button
                     document.getElementById('purchaseButton').addEventListener('click', function() {
                         const itemId = this.getAttribute('data-item-id');
                         fetch(`/api/purchase/${itemId}`, {
@@ -42,23 +39,39 @@ document.addEventListener('DOMContentLoaded', function() {
                                 'Content-Type': 'application/json'
                             }
                         })
-                        .then(response => response.json())
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Failed to process purchase.');
+                            }
+                            return response.json();
+                        })
                         .then(data => {
-                            alert(data.message); // Show success or error message
+                            console.log('Purchase successful:', data.message);
+                            toastr.success(data.message);
                             if (data.newBalance !== undefined) {
-                                document.getElementById('balance').textContent = data.newBalance + ' USDT'; // Update balance displayed
+                                document.getElementById('balance').textContent = data.newBalance + ' USDT';
                             }
                             myModal.hide();
                         })
                         .catch(error => {
                             console.error('Error processing purchase:', error);
-                            alert('Failed to process purchase.');
+                            toastr.error('Failed to process purchase.', 'Error', {
+                                closeButton: true,
+                                progressBar: true,
+                                positionClass: 'toast-top-right',
+                                timeOut: 5000
+                            });
                         });
                     });
                 })
                 .catch(error => {
                     console.error('Error fetching item details:', error);
-                    alert('Failed to load item details. Please try again.');
+                    toastr.error('Failed to load item details. Please try again.', 'Error', {
+                        closeButton: true,
+                        progressBar: true,
+                        positionClass: 'toast-top-right',
+                        timeOut: 5000
+                    });
                 });
         }
     });

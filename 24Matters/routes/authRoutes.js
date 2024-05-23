@@ -15,27 +15,33 @@ const transporter = nodemailer.createTransport({
 });
 
 router.get('/auth/register', (req, res) => {
-  res.render('register');
+  const messages = { errorMessage: req.session.errorMessage };
+  req.session.errorMessage = null;
+  res.render('register', messages);
 });
 
 router.post('/auth/register', async (req, res) => {
   try {
     const { username, phone, password, confirmPassword, gender, referralCode, termsAccepted } = req.body;
     if (password !== confirmPassword) {
-      return res.status(400).send('Passwords do not match.');
+      req.session.errorMessage = 'Passwords do not match.';
+      return res.redirect('/auth/register');
     }
     if (!termsAccepted || termsAccepted !== 'on') {
-      return res.status(400).send('You must accept the terms and conditions.');
+      req.session.errorMessage = 'You must accept the terms and conditions.';
+      return res.redirect('/auth/register');
     }
     const existingUser = await User.findOne({ $or: [{ username }, { phone }] });
     if (existingUser) {
-      return res.status(400).send('User with the given username or phone already exists.');
+      req.session.errorMessage = 'User with the given username or phone already exists.';
+      return res.redirect('/auth/register');
     }
     let referringUser = null;
     if (referralCode) {
       referringUser = await User.findOne({ referralCode });
       if (!referringUser) {
-        return res.status(400).send('Invalid referral code.');
+        req.session.errorMessage = 'Invalid referral code.';
+        return res.redirect('/auth/register');
       }
     }
     const newUser = await User.create({ username, phone, password, gender, termsAccepted: true });
@@ -44,7 +50,8 @@ router.post('/auth/register', async (req, res) => {
       referringUser.referrals.push(newUser._id);
       await referringUser.save();
     }
-    res.redirect('/auth/setup2fa'); // Redirect to 2FA setup instead of login
+    req.session.successMessage = 'Registration successful! Please log in.'; // Setting a success message
+    res.redirect('/auth/login'); // Redirect to login with success message
   } catch (error) {
     console.error('Registration error:', error);
     console.error(error.stack);
@@ -53,7 +60,10 @@ router.post('/auth/register', async (req, res) => {
 });
 
 router.get('/auth/login', (req, res) => {
-  res.render('login');
+  const messages = { errorMessage: req.session.errorMessage, successMessage: req.session.successMessage };
+  req.session.errorMessage = null;
+  req.session.successMessage = null;
+  res.render('login', messages);
 });
 
 router.post('/auth/login', async (req, res) => {
@@ -61,19 +71,20 @@ router.post('/auth/login', async (req, res) => {
     const { username, password } = req.body;
     const user = await User.findOne({ username });
     if (!user) {
-      return res.status(400).send('User not found');
+      req.session.errorMessage = 'Invalid username or password';
+      return res.redirect('/auth/login');
     }
     const isMatch = await bcrypt.compare(password, user.password);
-    if (isMatch) {
-      if (user.twoFactorSecret) {
-        req.session.tempUserId = user._id; // Store user ID temporarily
-        res.redirect('/auth/2fa');
-      } else {
-        req.session.userId = user._id;
-        res.redirect('/');
-      }
+    if (!isMatch) {
+      req.session.errorMessage = 'Invalid username or password';
+      return res.redirect('/auth/login');
+    }
+    if (user.twoFactorSecret) {
+      req.session.tempUserId = user._id; // Store user ID temporarily
+      res.redirect('/auth/2fa');
     } else {
-      return res.status(400).send('Password is incorrect');
+      req.session.userId = user._id;
+      res.redirect('/');
     }
   } catch (error) {
     console.error('Login error:', error);

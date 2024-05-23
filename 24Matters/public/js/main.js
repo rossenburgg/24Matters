@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Listening for task progress updates
   socket.on('taskProgress', (data) => {
-    alert(`Task ${data.taskId} is now ${data.status}.`);
+    toastr.info(`Task ${data.taskId} is now ${data.status}.`);
     console.log(`Task ${data.taskId} status updated to ${data.status}.`);
     // Optionally, update task status on the page...
   });
@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Error handling for WebSocket connection
   socket.on('connect_error', (err) => {
     console.error('WebSocket connection error: ', err.message);
+    toastr.error('WebSocket connection error.');
     console.log('Attempting to reconnect to WebSocket...');
     setTimeout(() => {
       socket.connect();
@@ -21,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Attempt to re-establish connection upon disconnection
   socket.on('disconnect', () => {
     console.warn('WebSocket disconnected. Attempting to reconnect...');
+    toastr.warning('WebSocket disconnected. Attempting to reconnect...');
     setTimeout(() => {
       socket.connect();
     }, 1000); // Attempt to reconnect after 1 second
@@ -36,13 +38,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (password !== confirmPassword) {
         e.preventDefault(); // Prevent form submission
-        alert('Passwords do not match.');
+        toastr.error('Passwords do not match.');
         console.error('Form submission error: Passwords do not match.');
       }
 
       if (!termsAccepted) {
         e.preventDefault(); // Prevent form submission
-        alert('You must accept the terms and conditions.');
+        toastr.error('You must accept the terms and conditions.');
         console.error('Form submission error: Terms and conditions not accepted.');
       }
     });

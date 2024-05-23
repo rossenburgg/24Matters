@@ -6,6 +6,16 @@
     <main role="main">
       <div class="container mt-5">
         <h2>Login</h2>
+        <% if (errorMessage) { %>
+          <div class="alert alert-danger" role="alert">
+            <%= errorMessage %>
+          </div>
+        <% } %>
+        <% if (successMessage) { %>
+          <div class="alert alert-success" role="alert">
+            <%= successMessage %>
+          </div>
+        <% } %>
         <form action="/auth/login" method="POST">
           <div class="mb-3">
             <input type="text" name="username" placeholder="Username" required class="form-control">
