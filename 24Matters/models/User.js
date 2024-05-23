@@ -15,6 +15,8 @@ const userSchema = new mongoose.Schema({
   referralCode: { type: String, unique: true, default: () => require('crypto').randomBytes(8).toString('hex') },
   referrals: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   rewards: { type: Number, default: 0 },
+  isAdmin: { type: Boolean, default: false },
+  tier: { type: String, enum: ['VIP1', 'VIP2', 'VIP3', 'VIP4'], default: 'VIP1' }, // Added tier field
 });
 
 userSchema.pre('save', function(next) {

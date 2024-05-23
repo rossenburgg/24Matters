@@ -4,25 +4,15 @@ const Purchase = require('../models/Purchase');
 const Item = require('../models/Item');
 const User = require('../models/User');
 const { isAuthenticated } = require('./middleware/authMiddleware');
+const isAdminMiddleware = require('./middleware/isAdminMiddleware');
 
-// Middleware to check if the user is an admin
-const isAdmin = (req, res, next) => {
-  // Assuming there's a field in User model to check if user is admin
-  User.findById(req.session.userId, (err, user) => {
-    if (err) {
-      console.error('Error fetching user data:', err);
-      return res.status(500).send('Internal Server Error');
-    }
-    if (user && user.isAdmin) {
-      next();
-    } else {
-      res.status(403).send('Access denied. Admins only.');
-    }
-  });
-};
+// Admin Dashboard Route
+router.get('/admin/dashboard', [isAuthenticated, isAdminMiddleware], (req, res) => {
+    res.render('admin/dashboard');
+});
 
 // Route to display pending purchases for admin to review
-router.get('/purchases', [isAuthenticated, isAdmin], async (req, res) => {
+router.get('/purchases', [isAuthenticated, isAdminMiddleware], async (req, res) => {
   try {
     const pendingPurchases = await Purchase.find({ status: 'pending' }).populate('itemId').exec();
     res.render('adminPurchases', { pendingPurchases });
@@ -33,7 +23,7 @@ router.get('/purchases', [isAuthenticated, isAdmin], async (req, res) => {
 });
 
 // Route to confirm a purchase
-router.post('/purchase/:id/confirm', [isAuthenticated, isAdmin], async (req, res) => {
+router.post('/purchase/:id/confirm', [isAuthenticated, isAdminMiddleware], async (req, res) => {
   try {
     const purchaseId = req.params.id;
     const purchase = await Purchase.findById(purchaseId);
@@ -57,7 +47,7 @@ router.post('/purchase/:id/confirm', [isAuthenticated, isAdmin], async (req, res
 });
 
 // Route to reject a purchase
-router.post('/purchase/:id/reject', [isAuthenticated, isAdmin], async (req, res) => {
+router.post('/purchase/:id/reject', [isAuthenticated, isAdminMiddleware], async (req, res) => {
   try {
     const purchaseId = req.params.id;
     const purchase = await Purchase.findById(purchaseId);

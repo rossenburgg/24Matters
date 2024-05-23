@@ -1,0 +1,58 @@
+/* Admin Sidebar Styles */
+.admin-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 250px;
+    height: 100vh; /* Updated to ensure full height */
+    background-color: #343a40;
+    color: white;
+    padding: 20px;
+    z-index: 1000; /* Ensure sidebar is above other content */
+    transition: transform 0.3s ease; /* Smooth transition for toggling visibility */
+}
+
+.admin-sidebar a {
+    color: white;
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.admin-sidebar a:hover {
+    background-color: #495057;
+}
+
+/* Adjust main content padding to account for sidebar */
+body.with-admin-sidebar {
+    padding-left: 250px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .admin-sidebar {
+        width: 80%; /* Adjust width for mobile devices */
+        height: auto;
+        position: fixed; /* Keep position fixed for overlay effect */
+        transform: translateX(-100%); /* Hide sidebar off-screen */
+    }
+    body.with-admin-sidebar {
+        padding-left: 0;
+    }
+    .admin-sidebar-toggle {
+        display: block; /* Show toggle button on small screens */
+        position: fixed;
+        left: 20px;
+        top: 20px;
+        z-index: 1010; /* Ensure toggle button is above the sidebar */
+        cursor: pointer;
+        font-size: 30px;
+        color: #343a40;
+    }
+    .admin-sidebar.show {
+        transform: translateX(0); /* Show sidebar */
+    }
+}

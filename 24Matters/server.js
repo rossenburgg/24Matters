@@ -15,6 +15,7 @@ const analyticsRoutes = require('./routes/analyticsRoutes'); // Import analytics
 const apiRoutes = require('./routes/apiRoutes'); // Import apiRoutes for analytics data
 const userSettingsRoutes = require('./routes/userSettingsRoutes'); // Import userSettingsRoutes
 const referralRoutes = require('./routes/referralRoutes'); // Import referralRoutes
+const adminRoutes = require('./routes/adminRoutes'); // Import adminRoutes
 const User = require('./models/User'); // Import User model
 const http = require('http');
 const { Server } = require("socket.io");
@@ -148,6 +149,9 @@ app.use(userSettingsRoutes);
 
 // Referral Routes - Serve referral system functionality
 app.use(referralRoutes);
+
+// Admin Routes - Serve admin dashboard and functionalities
+app.use(adminRoutes);
 
 // If no routes handled the request, it's a 404
 app.use((req, res, next) => {
