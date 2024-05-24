@@ -18,10 +18,10 @@ router.post('/submit-support', isAuthenticated, async (req, res) => {
       createdAt: new Date()
     });
     await supportRequest.save();
-    res.status(200).send('Support request submitted successfully');
+    res.status(200).json({ message: 'Support request submitted successfully' }); // Changed to send JSON response for Toastr notification
   } catch (error) {
-    console.error(`Error submitting support request: ${error.message}`, error);
-    res.status(500).send('Error submitting support request');
+    console.error(`Error submitting support request: ${error.message}`, error.stack);
+    res.status(500).json({ error: 'Error submitting support request' }); // Changed to send JSON response for Toastr error handling
   }
 });
 
