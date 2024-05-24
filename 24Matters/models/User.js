@@ -16,7 +16,8 @@ const userSchema = new mongoose.Schema({
   referrals: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   rewards: { type: Number, default: 0 },
   isAdmin: { type: Boolean, default: false },
-  tier: { type: String, enum: ['VIP1', 'VIP2', 'VIP3', 'VIP4'], default: 'VIP1' }, // Added tier field
+  tier: { type: String, enum: ['VIP1', 'VIP2', 'VIP3', 'VIP4'], default: 'VIP1' },
+  loyaltyPoints: { type: Number, default: 0 }, // Added field for loyalty points
 });
 
 userSchema.pre('save', function(next) {
@@ -35,6 +36,18 @@ userSchema.pre('save', function(next) {
   // Normalize phone number
   user.phone = user.phone.replace(/[^0-9]/g, '');
 });
+
+// Method to update user's balance
+userSchema.methods.updateBalance = async function(amount) {
+  this.balance += amount;
+  try {
+    await this.save();
+    console.log(`Balance updated successfully for user: ${this.username}`);
+  } catch (error) {
+    console.error(`Error updating balance for user: ${this.username}`, error);
+    throw error; // Rethrow the error to be handled by the caller
+  }
+};
 
 const User = mongoose.model('User', userSchema);
 

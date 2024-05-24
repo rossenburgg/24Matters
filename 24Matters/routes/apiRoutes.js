@@ -15,7 +15,7 @@ router.get('/analytics/data', async (req, res) => {
       return res.status(403).json({ message: 'User not authenticated' });
     }
 
-    const tasks = await Task.find({ userId: req.session.userId });
+    const tasks = await Task.find({ userId: req.session.userId }).lean();
     const labels = tasks.map(task => task.creationDate.toISOString().split('T')[0]);
     const earnings = tasks.map(task => task.amountEarned);
 
@@ -23,7 +23,8 @@ router.get('/analytics/data', async (req, res) => {
 
     res.json({
       labels,
-      earnings
+      earnings,
+      tasks // Include tasks details for the performance metrics table
     });
   } catch (err) {
     console.error('Error fetching analytics data:', err);

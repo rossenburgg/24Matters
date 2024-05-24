@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <%- include('./partials/_head.ejs') %>
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 </head>
 <body class="<%= themePreference %>">
   <%- include('./partials/_header.ejs') %>
@@ -44,7 +45,10 @@
             <span class="fw-semibold text-dark ms-1">Status: <%= accountStatus %></span>
             <p class="fw-semibold text-dark ms-1">Commission: <span id="commission"><%= commission %></span> USDT</p>
             <p class="fw-semibold text-dark ms-1">Referral Rewards: <%= user.rewards %></p>
-
+            <p class="fw-semibold text-dark ms-1">Loyalty Points: <%= user.loyaltyPoints %></p> <!-- Displaying loyalty points -->
+            <% if (user.loyaltyPoints >= 100) { %>
+              <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#redeemPointsModal">Redeem Points</button>
+            <% } %>
 
             <!-- End Rating -->
           </div>
@@ -63,7 +67,7 @@
                     <div class="modal-body" style="display: flex; flex-direction: column; align-items: center;">
                       <img src="/svg/illustrations/oc-money-profits.svg" />
                       <p style="text-align: center;">Daily reward ready!</p>
-                      <a class="btn btn-primary">Claim daily reward</a>
+                      <button class="btn btn-primary" id="claimDailyReward">Claim daily reward</button>
                     </div>
                   
                     <div class="modal-footer">
@@ -205,6 +209,8 @@
   <script src="/js/main.js"></script>
   <script src="/js/walletInfo.js"></script>
   <script src="/js/balanceUpdates.js"></script>
+  <script src="/js/dailyRewards.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
   <script src="/vendor/shufflejs/dist/shuffle.js"></script>
   <script src="/vendor/hs-nav-scroller/dist/hs-nav-scroller.min.js"></script>
   <script src="/vendor/typed.js/lib/typed.min.js"></script>

@@ -16,6 +16,8 @@ const apiRoutes = require('./routes/apiRoutes'); // Import apiRoutes for analyti
 const userSettingsRoutes = require('./routes/userSettingsRoutes'); // Import userSettingsRoutes
 const referralRoutes = require('./routes/referralRoutes'); // Import referralRoutes
 const adminRoutes = require('./routes/adminRoutes'); // Import adminRoutes
+const loyaltyPointsRoutes = require('./routes/loyaltyPointsRoutes'); // Import loyaltyPointsRoutes
+const dailyRewardRoutes = require('./routes/dailyRewardRoutes'); // Import dailyRewardRoutes
 const User = require('./models/User'); // Import User model
 const http = require('http');
 const { Server } = require("socket.io");
@@ -152,6 +154,12 @@ app.use(referralRoutes);
 
 // Admin Routes - Serve admin dashboard and functionalities
 app.use(adminRoutes);
+
+// Loyalty Points Routes - Serve loyalty points management functionality
+app.use('/loyalty', loyaltyPointsRoutes);
+
+// Daily Reward Routes - Serve daily reward functionality
+app.use(dailyRewardRoutes);
 
 // If no routes handled the request, it's a 404
 app.use((req, res, next) => {
