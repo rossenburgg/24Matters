@@ -13,20 +13,25 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => {
             if (!response.ok) {
-                throw new Error('Failed to claim the daily reward');
+                if (response.status === 400) {
+                    response.json().then(data => {
+                        toastr.error(data.message);
+                        console.error('Failed to claim daily reward:', data.message);
+                    });
+                } else {
+                    throw new Error('Failed to claim the daily reward');
+                }
+            } else {
+                return response.json();
             }
-            return response.json();
         })
         .then(data => {
-            if (data.message) {
+            if (data && data.message) {
                 toastr.success(data.message);
                 if (data.newBalance !== undefined) {
                     document.getElementById('balance').textContent = data.newBalance;
                     console.log('Daily reward claimed successfully, balance updated.');
                 }
-            } else {
-                toastr.error('Failed to claim daily reward.');
-                console.error('Failed to claim daily reward, server did not return a message.');
             }
         })
         .catch(error => {

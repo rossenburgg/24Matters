@@ -56,7 +56,11 @@
 
           <div class="col-md-auto align-self-md-end">
             <div class="d-grid d-sm-flex gap-2">
-              <a class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#dailyrewardmodal">Daily rewards</a>
+              <% if (!dailyRewardClaimed) { %>
+                <a class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#dailyrewardmodal">Daily rewards</a>
+              <% } else { %>
+                <p>Reward already claimed today.</p>
+              <% } %>
               <div id="dailyrewardmodal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dailyrewardmodal" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
                   <div class="modal-content">
@@ -214,6 +218,7 @@
   <script src="/vendor/shufflejs/dist/shuffle.js"></script>
   <script src="/vendor/hs-nav-scroller/dist/hs-nav-scroller.min.js"></script>
   <script src="/vendor/typed.js/lib/typed.min.js"></script>
+  <script src="/js/toastrNotifications.js"></script> <!-- Updated path for toastrNotifications.js -->
   <script>
      (function() {
     // INITIALIZATION OF TEXT ANIMATION (TYPING)

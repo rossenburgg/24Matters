@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../models/User');
 const Item = require('../models/Item'); // Required for fetching items
 const Announcement = require('../models/Announcement'); // Import the Announcement model
+const DailyReward = require('../models/DailyReward');
 const { isAuthenticated } = require('./middleware/authMiddleware');
 
 router.get('/', isAuthenticated, async (req, res) => {
@@ -10,6 +11,13 @@ router.get('/', isAuthenticated, async (req, res) => {
     const user = await User.findById(req.session.userId).exec();
     const items = await Item.find({}).exec(); // Fetching all items from the database
     const announcements = await Announcement.find({}).sort({ createdAt: -1 }).exec(); // Fetching all announcements from the database
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const rewardClaimed = await DailyReward.findOne({
+      userId: req.session.userId,
+      date: today
+    }).exec();
+
     if (!user) {
       console.log("Redirecting to login, user not found.");
       res.redirect('/login');
@@ -24,7 +32,8 @@ router.get('/', isAuthenticated, async (req, res) => {
         user: user, // Pass the entire user object to the view
         appBaseUrl: process.env.APP_BASE_URL, // Make appBaseUrl available to the view
         items: items, // Passing items to the view
-        announcements: announcements // Passing announcements to the view
+        announcements: announcements, // Passing announcements to the view
+        dailyRewardClaimed: !!rewardClaimed // Pass a boolean indicating if the daily reward was claimed
       });
     }
   } catch (error) {
