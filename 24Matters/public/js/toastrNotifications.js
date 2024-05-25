@@ -3,7 +3,7 @@ const toastrNotifications = {
         switch (type) {
             case 'success':
                 try {
-                    toastr.success(message, title);
+                    toastr.success(message, title, { closeButton: true, progressBar: true, timeOut: 5000 });
                     console.log(`Success notification: ${title} - ${message}`);
                 } catch (error) {
                     console.error(`Error displaying success notification: ${error.message}`, error);
@@ -11,7 +11,7 @@ const toastrNotifications = {
                 break;
             case 'error':
                 try {
-                    toastr.error(message, title);
+                    toastr.error(message, title, { closeButton: true, progressBar: true, timeOut: 5000 });
                     console.log(`Error notification: ${title} - ${message}`);
                 } catch (error) {
                     console.error(`Error displaying error notification: ${error.message}`, error);
@@ -19,7 +19,7 @@ const toastrNotifications = {
                 break;
             case 'info':
                 try {
-                    toastr.info(message, title);
+                    toastr.info(message, title, { closeButton: true, progressBar: true, timeOut: 5000 });
                     console.log(`Info notification: ${title} - ${message}`);
                 } catch (error) {
                     console.error(`Error displaying info notification: ${error.message}`, error);
@@ -27,7 +27,7 @@ const toastrNotifications = {
                 break;
             case 'warning':
                 try {
-                    toastr.warning(message, title);
+                    toastr.warning(message, title, { closeButton: true, progressBar: true, timeOut: 5000 });
                     console.log(`Warning notification: ${title} - ${message}`);
                 } catch (error) {
                     console.error(`Error displaying warning notification: ${error.message}`, error);

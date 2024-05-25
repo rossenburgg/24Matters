@@ -47,10 +47,16 @@ document.addEventListener('DOMContentLoaded', function() {
                                     'Content-Type': 'application/json'
                                 }
                             })
-                            .then(response => response.json())
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Failed to process purchase');
+                                }
+                                return response.json();
+                            })
                             .then(data => {
                                 if (data.message) {
-                                    alert(data.message); // Show success or error message
+                                    // Replace default alert with toastr notification
+                                    toastrNotifications.showToastrNotification('success', data.message, 'Purchase Confirmation');
                                 }
                                 if (data.newBalance !== undefined) {
                                     const balanceElement = document.getElementById('balance');
@@ -62,17 +68,21 @@ document.addEventListener('DOMContentLoaded', function() {
                             })
                             .catch(error => {
                                 console.error('Error processing purchase:', error);
-                                alert('Failed to process purchase.');
+                                // Replace default alert with toastr notification for error
+                                toastrNotifications.showToastrNotification('error', error.toString(), 'Error');
                             });
                         });
                     }
                 } else {
                     console.error('Modal elements not found, cannot populate item details.');
+                    // Replace default alert with toastr notification for error
+                    toastrNotifications.showToastrNotification('error', 'Failed to load item details. Please try again.', 'Error');
                 }
             })
             .catch(error => {
                 console.error('Error fetching item details:', error);
-                alert('Failed to load item details. Please try again.');
+                // Replace default alert with toastr notification for error
+                toastrNotifications.showToastrNotification('error', error.toString(), 'Error');
             });
     };
 });

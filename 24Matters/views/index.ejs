@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <%- include('partials/_head.ejs') %>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
   <body>
 <%- include('partials/_header.ejs') %>
     <main role="main" class="container mt-4">
@@ -10,5 +11,7 @@
     </main>
   </body>
 <%- include('partials/_footer.ejs') %>
-  <script src="/js/main.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script src="/js/toastrOptions.js"></script>
+<script src="/js/main.js"></script>
 </html>
