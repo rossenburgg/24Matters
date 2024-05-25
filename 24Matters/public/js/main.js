@@ -65,6 +65,17 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // Notification dropdown toggle
+  document.addEventListener('click', function(event) {
+    const isDropdownButton = event.target.matches('#notificationIcon') || event.target.closest('#notificationIcon') !== null;
+    const dropdownMenu = document.querySelector('#notificationDropdown .dropdown-menu');
+    if (isDropdownButton) {
+      dropdownMenu.classList.toggle('show');
+    } else if (dropdownMenu.classList.contains('show')) {
+      dropdownMenu.classList.remove('show');
+    }
+  });
 });
 
 // Toastr configuration

@@ -27,10 +27,13 @@
         <li class="nav-item">
           <a class="nav-link" href="/auth/logout">Logout</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#" id="notificationIcon">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="notificationIcon" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="fa fa-bell"></i> <span id="notificationCount">0</span>
           </a>
+          <ul class="dropdown-menu" aria-labelledby="notificationIcon" id="notificationDropdown">
+            <li><a class="dropdown-item" href="#">No notifications</a></li>
+          </ul>
         </li>
       <% } else { %>
         <li class="nav-item">
@@ -39,16 +42,53 @@
       <% } %>
     </ul>
   </div>
-  <script src="/socket.io/socket.io.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      var socket = io();
-      <% if (session && session.userId) { %>
-        socket.emit('register', '<%= session.userId %>');
-        socket.on('notification count', function(count) {
-          document.getElementById('notificationCount').textContent = count;
-        });
-      <% } %>
-    });
-  </script>
 </nav>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const notificationIcon = document.getElementById('notificationIcon');
+    const notificationDropdown = document.getElementById('notificationDropdown');
+    const socket = io();
+
+    notificationIcon.addEventListener('click', function(event) {
+      event.stopPropagation();
+      notificationDropdown.classList.toggle('show');
+    });
+
+    document.addEventListener('click', function(event) {
+      if (!notificationDropdown.contains(event.target)) {
+        notificationDropdown.classList.remove('show');
+      }
+    });
+
+    socket.on('connect', function() {
+      console.log('Connected to the server for notifications.');
+      // Register the user for notifications using their session userId
+      const userId = '<%= session.userId %>';
+      if (userId) {
+        socket.emit('register', userId);
+        console.log('Registering user for notifications:', userId);
+      } else {
+        console.error('User ID not found. Ensure the meta tag for user ID is correctly set.');
+      }
+    });
+
+    socket.on('notification count', function(count) {
+      document.getElementById('notificationCount').textContent = count;
+    });
+
+    socket.on('new notification', function(notification) {
+      const noNotificationsItem = notificationDropdown.querySelector('.dropdown-item');
+      if (noNotificationsItem && noNotificationsItem.textContent === 'No notifications') {
+        noNotificationsItem.remove();
+      }
+      const newNotificationItem = document.createElement('li');
+      newNotificationItem.innerHTML = `<a class="dropdown-item" href="#">${notification.message}</a>`;
+      notificationDropdown.appendChild(newNotificationItem);
+    });
+
+    socket.on('disconnect', function() {
+      console.log('Disconnected from the server.');
+    });
+  });
+</script>

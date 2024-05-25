@@ -117,6 +117,16 @@ io.on('connection', (socket) => {
       console.error(`Error fetching initial unread notifications for user ${userId}: ${error}`);
       console.error(error.stack);
     });
+
+    // Fetch and emit existing notifications to the user upon connection
+    Notification.find({ userId: userId, read: false })
+      .then(notifications => {
+        io.to(userId).emit('existing notifications', notifications);
+      })
+      .catch(error => {
+        console.error(`Error fetching existing notifications for user ${userId}: ${error}`);
+        console.error(error.stack);
+      });
   });
 
   // Listen for balance update requests and emit updates to the specific user
