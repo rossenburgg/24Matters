@@ -25,6 +25,28 @@ document.addEventListener('DOMContentLoaded', () => {
             const notificationDropdown = document.getElementById('notificationDropdown');
             if (notificationDropdown) {
                 notificationDropdown.classList.toggle('show');
+                // Fetch notifications on click and populate the dropdown
+                fetch('/api/notifications')
+                    .then(response => response.json())
+                    .then(data => {
+                        const notificationDropdownMenu = document.getElementById('notificationDropdownMenu');
+                        if (notificationDropdownMenu) {
+                            notificationDropdownMenu.innerHTML = ''; // Clear existing notifications
+                            data.notifications.forEach(notification => {
+                                const newNotificationElement = document.createElement('a');
+                                newNotificationElement.href = '#';
+                                newNotificationElement.classList.add('dropdown-item');
+                                newNotificationElement.innerText = notification.message;
+                                notificationDropdownMenu.prepend(newNotificationElement);
+                            });
+                            console.log('Notifications fetched and added to the dropdown menu.');
+                        } else {
+                            console.error('Notification dropdown menu element not found.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching notifications:', error);
+                    });
                 console.log('Toggled notification dropdown visibility.');
             } else {
                 console.error('Notification dropdown element not found.');

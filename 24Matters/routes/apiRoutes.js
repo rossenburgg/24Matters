@@ -133,7 +133,7 @@ router.get('/notifications', isAuthenticated, async (req, res) => {
     const totalNotifications = await Notification.countDocuments({ userId });
     res.status(200).json({
       success: true,
-      notifications,
+      notifications: notifications,
       pageInfo: {
         currentPage: page,
         totalPages: Math.ceil(totalNotifications / limit),
