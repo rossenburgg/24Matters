@@ -98,13 +98,11 @@ io.on('connection', (socket) => {
     console.log('User disconnected');
   });
 
-  socket.on('support message', (msg) => {
-    console.log(`Message received: ${msg}`);
-    io.emit('support message', msg);
-  });
-
-  // User-Socket mapping for targeted balance updates
   socket.on('register', userId => {
+    if (!userId) {
+      console.error("Attempt to register socket without userId");
+      return;
+    }
     // Associate the user ID with the socket ID
     socket.join(userId); // Using rooms to manage user sessions
     console.log(`User ${userId} registered with socket ID ${socket.id}`);
@@ -117,20 +115,14 @@ io.on('connection', (socket) => {
       console.error(`Error fetching initial unread notifications for user ${userId}: ${error}`);
       console.error(error.stack);
     });
-
-    // Fetch and emit existing notifications to the user upon connection
-    Notification.find({ userId: userId, read: false })
-      .then(notifications => {
-        io.to(userId).emit('existing notifications', notifications);
-      })
-      .catch(error => {
-        console.error(`Error fetching existing notifications for user ${userId}: ${error}`);
-        console.error(error.stack);
-      });
   });
 
   // Listen for balance update requests and emit updates to the specific user
   socket.on('request balance update', (data) => {
+    if (!data.userId) {
+      console.error("Balance update request without userId");
+      return;
+    }
     console.log(`Balance update requested for user: ${data.userId}`);
     // Emit the balance update only to sockets in the user's room
     io.to(data.userId).emit('balance update', { newBalance: data.newBalance });
@@ -138,6 +130,10 @@ io.on('connection', (socket) => {
 
   // Custom event listener for new notifications
   socket.on('new-notification', async (userId) => {
+    if (!userId) {
+      console.error("New notification event received without userId");
+      return;
+    }
     try {
       const unreadNotifications = await Notification.find({ userId: userId, read: false }).count();
       io.to(userId).emit('notification count', unreadNotifications);

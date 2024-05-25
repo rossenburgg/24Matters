@@ -5,6 +5,7 @@ const User = require('../models/User');
 const Purchase = require('../models/Purchase'); // Importing the Purchase model
 const { isAuthenticated } = require('./middleware/authMiddleware');
 const { fetchUnreadNotificationsPaginated } = require('../services/notificationService');
+const Notification = require('../models/Notification'); // Importing the Notification model
 const router = express.Router();
 
 // Serve analytics data for the dashboard
@@ -117,6 +118,32 @@ router.get('/notifications/unread', isAuthenticated, async (req, res) => {
     console.error("Error fetching unread notifications:", error);
     console.error(error.stack);
     res.status(500).json({ success: false, message: "Failed to fetch unread notifications" });
+  }
+});
+
+// New route for fetching user-specific notifications with pagination
+router.get('/notifications', isAuthenticated, async (req, res) => {
+  const userId = req.session.userId;
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  try {
+    const notifications = await Notification.find({ userId }).sort({ createdAt: -1 }).skip(skip).limit(limit);
+    const totalNotifications = await Notification.countDocuments({ userId });
+    res.status(200).json({
+      success: true,
+      notifications,
+      pageInfo: {
+        currentPage: page,
+        totalPages: Math.ceil(totalNotifications / limit),
+        totalNotifications,
+      },
+    });
+  } catch (error) {
+    console.error('Failed to fetch notifications:', error);
+    console.error(error.stack);
+    res.status(500).json({ success: false, message: 'Failed to fetch notifications' });
   }
 });
 

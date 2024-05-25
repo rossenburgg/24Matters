@@ -28,7 +28,7 @@
           <a class="nav-link" href="/auth/logout">Logout</a>
         </li>
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="notificationIcon" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-link dropdown-toggle" href="#" id="notificationIcon" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-user-id="<%= session.userId %>">
             <i class="fa fa-bell"></i> <span id="notificationCount">0</span>
           </a>
           <ul class="dropdown-menu" aria-labelledby="notificationIcon" id="notificationDropdown">
@@ -46,49 +46,42 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    const socket = io();
     const notificationIcon = document.getElementById('notificationIcon');
     const notificationDropdown = document.getElementById('notificationDropdown');
-    const socket = io();
+    const notificationCount = document.getElementById('notificationCount');
+    const userId = notificationIcon ? notificationIcon.getAttribute('data-user-id') : null;
 
-    notificationIcon.addEventListener('click', function(event) {
-      event.stopPropagation();
+    notificationIcon.addEventListener('click', function() {
       notificationDropdown.classList.toggle('show');
     });
 
-    document.addEventListener('click', function(event) {
-      if (!notificationDropdown.contains(event.target)) {
-        notificationDropdown.classList.remove('show');
-      }
-    });
-
-    socket.on('connect', function() {
-      console.log('Connected to the server for notifications.');
-      // Register the user for notifications using their session userId
-      const userId = '<%= session.userId %>';
-      if (userId) {
+    if (userId) {
+      socket.on('connect', function() {
         socket.emit('register', userId);
-        console.log('Registering user for notifications:', userId);
-      } else {
-        console.error('User ID not found. Ensure the meta tag for user ID is correctly set.');
-      }
-    });
+      });
 
-    socket.on('notification count', function(count) {
-      document.getElementById('notificationCount').textContent = count;
-    });
+      socket.on('notification count', function(count) {
+        notificationCount.innerText = count;
+        if (count > 0) {
+          fetch('/api/notifications')
+            .then(response => response.json())
+            .then(data => {
+              const notifications = data.map(notification => 
+                `<li><a class="dropdown-item" href="#">${notification.message}</a></li>`
+              ).join('');
+              notificationDropdown.innerHTML = notifications;
+            })
+            .catch(error => {
+              console.error('Error fetching notifications:', error);
+            });
+        }
+      });
 
-    socket.on('new notification', function(notification) {
-      const noNotificationsItem = notificationDropdown.querySelector('.dropdown-item');
-      if (noNotificationsItem && noNotificationsItem.textContent === 'No notifications') {
-        noNotificationsItem.remove();
-      }
-      const newNotificationItem = document.createElement('li');
-      newNotificationItem.innerHTML = `<a class="dropdown-item" href="#">${notification.message}</a>`;
-      notificationDropdown.appendChild(newNotificationItem);
-    });
-
-    socket.on('disconnect', function() {
-      console.log('Disconnected from the server.');
-    });
+      socket.on('new notification', function(notification) {
+        const newNotification = `<li><a class="dropdown-item" href="#">${notification.message}</a></li>`;
+        notificationDropdown.innerHTML = newNotification + notificationDropdown.innerHTML;
+      });
+    }
   });
 </script>
