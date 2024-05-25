@@ -1,10 +1,10 @@
 # 24Matters
 
-24Matters is a comprehensive cryptocurrency management platform designed to offer users a wide range of functionalities to manage their cryptocurrency assets effectively. It enables users to view real-time wallet information, engage in tasks to earn cryptocurrency, view detailed transaction history, and access robust customer support within a secure and user-friendly environment.
+24Matters is a comprehensive cryptocurrency management platform designed to offer users a wide range of functionalities for managing their cryptocurrency assets effectively. It enables users to view real-time wallet information, engage in tasks to earn cryptocurrency, view detailed transaction history, and access robust customer support within a secure and user-friendly environment.
 
 ## Overview
 
-The platform is built on a modern technology stack leveraging Node.js, Express for the backend, MongoDB for database management, and integrates real-time functionalities with Socket.IO for a responsive user experience. It utilizes a modular architecture for easy scalability and maintenance, ensuring a seamless experience for both users and administrators.
+The platform is built on a modern technology stack leveraging Node.js and Express for the backend, MongoDB for database management, and integrates real-time functionalities with Socket.IO for a responsive user experience. It utilizes a modular architecture for easy scalability and maintenance, ensuring a seamless experience for both users and administrators.
 
 ## Features
 
@@ -13,7 +13,6 @@ The platform is built on a modern technology stack leveraging Node.js, Express f
 - **Transaction History**: Access a detailed record of all transactions and tasks performed.
 - **Customer Support**: Integrated support functionality for account and transaction-related inquiries.
 - **Security Features**: Enhanced account security with two-factor authentication and real-time alerts for suspicious activities.
-- **Analytics and Reporting**: Detailed analytics dashboard for performance metrics and downloadable reports for transaction and earnings tracking.
 
 ## Getting started
 
