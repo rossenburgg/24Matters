@@ -18,6 +18,7 @@ const referralRoutes = require('./routes/referralRoutes'); // Import referralRou
 const adminRoutes = require('./routes/adminRoutes'); // Import adminRoutes
 const loyaltyPointsRoutes = require('./routes/loyaltyPointsRoutes'); // Import loyaltyPointsRoutes
 const dailyRewardRoutes = require('./routes/dailyRewardRoutes'); // Import dailyRewardRoutes
+const notificationMiddleware = require('./routes/middleware/notificationMiddleware'); // Import notificationMiddleware
 const User = require('./models/User'); // Import User model
 const http = require('http');
 const { Server } = require("socket.io");
@@ -118,6 +119,9 @@ io.on('connection', (socket) => {
   // Set up to emit events for balance and task updates
   app.set('socketio', io); // Make io accessible in route handlers
 });
+
+// Apply the notificationMiddleware globally
+app.use(notificationMiddleware);
 
 // Authentication Routes
 app.use(authRoutes);

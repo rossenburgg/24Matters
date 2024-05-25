@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <%- include('partials/_head.ejs') %>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
   <title>Deposit - 24Matters</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet"/>
 </head>
 <body>
   <%- include('partials/_header.ejs') %>
@@ -23,7 +23,9 @@
   </div>
 
   <%- include('partials/_footer.ejs') %>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
   <script src="/js/toastrNotifications.js"></script>
   <script src="/js/deposit.js"></script>
 </body>
