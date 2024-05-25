@@ -26,7 +26,7 @@ notificationSchema.statics.createNotification = async function(userId, message) 
     console.log("Notification created successfully:", notification);
     return notification;
   } catch (error) {
-    console.error("Error creating notification:", error.message, error.stack);
+    console.error("Error creating notification:", error.message);
     throw error;
   }
 };
@@ -37,7 +37,7 @@ notificationSchema.statics.markAsRead = async function(notificationId) {
     console.log("Notification marked as read:", notification);
     return notification;
   } catch (error) {
-    console.error("Error marking notification as read:", error.message, error.stack);
+    console.error("Error marking notification as read:", error.message);
     throw error;
   }
 };
@@ -48,7 +48,7 @@ notificationSchema.statics.deleteNotification = async function(notificationId) {
     console.log("Notification deleted successfully:", result);
     return result;
   } catch (error) {
-    console.error("Error deleting notification:", error.message, error.stack);
+    console.error("Error deleting notification:", error.message);
     throw error;
   }
 };

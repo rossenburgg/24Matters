@@ -27,3 +27,38 @@ body.dark {
     z-index: 1050; /* Ensure it's above other content */
   }
 }
+
+/* Notification bell and dropdown styles */
+.notification-bell {
+  cursor: pointer;
+  position: relative;
+}
+
+.notification-dropdown {
+  display: none; /* Initially hidden */
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 1050; /* Ensure it's above other content */
+  background-color: #fff;
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+  width: 300px;
+  border-radius: 4px;
+}
+
+.notification-dropdown.active {
+  display: block; /* Show dropdown when active */
+}
+
+.notification-item {
+  padding: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.notification-item:last-child {
+  border-bottom: none;
+}
+
+.notification-item:hover {
+  background-color: #f0f0f0;
+}

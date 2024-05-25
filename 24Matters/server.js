@@ -20,6 +20,7 @@ const loyaltyPointsRoutes = require('./routes/loyaltyPointsRoutes'); // Import l
 const dailyRewardRoutes = require('./routes/dailyRewardRoutes'); // Import dailyRewardRoutes
 const notificationMiddleware = require('./routes/middleware/notificationMiddleware'); // Import notificationMiddleware
 const User = require('./models/User'); // Import User model
+const Notification = require('./models/Notification'); // Import Notification model
 const http = require('http');
 const { Server } = require("socket.io");
 
@@ -92,9 +93,9 @@ app.locals.appBaseUrl = process.env.APP_BASE_URL;
 
 // Socket.io for real-time communication
 io.on('connection', (socket) => {
-  console.log('A user connected to the support chat');
+  console.log('A user connected');
   socket.on('disconnect', () => {
-    console.log('User disconnected from the support chat');
+    console.log('User disconnected');
   });
 
   socket.on('support message', (msg) => {
@@ -107,6 +108,15 @@ io.on('connection', (socket) => {
     // Associate the user ID with the socket ID
     socket.join(userId); // Using rooms to manage user sessions
     console.log(`User ${userId} registered with socket ID ${socket.id}`);
+
+    // Emit unread notification count upon user registration
+    Notification.find({ userId: userId, read: false }).count().then(unreadCount => {
+      io.to(userId).emit('notification count', unreadCount);
+      console.log(`Emitted initial notification count ${unreadCount} for user ${userId}`);
+    }).catch(error => {
+      console.error(`Error fetching initial unread notifications for user ${userId}: ${error}`);
+      console.error(error.stack);
+    });
   });
 
   // Listen for balance update requests and emit updates to the specific user
@@ -114,6 +124,18 @@ io.on('connection', (socket) => {
     console.log(`Balance update requested for user: ${data.userId}`);
     // Emit the balance update only to sockets in the user's room
     io.to(data.userId).emit('balance update', { newBalance: data.newBalance });
+  });
+
+  // Custom event listener for new notifications
+  socket.on('new-notification', async (userId) => {
+    try {
+      const unreadNotifications = await Notification.find({ userId: userId, read: false }).count();
+      io.to(userId).emit('notification count', unreadNotifications);
+      console.log(`Emitted notification count update for user ${userId}`);
+    } catch (error) {
+      console.error(`Error fetching unread notifications for user ${userId}: ${error}`);
+      console.error(error.stack);
+    }
   });
 
   // Set up to emit events for balance and task updates
@@ -148,7 +170,7 @@ app.use(supportRoutes);
 app.use(analyticsRoutes);
 
 // API Routes - Serve API requests for analytics data
-app.use('/api', apiRoutes); // Correctly prefix API routes with '/api'
+app.use('/api', apiRoutes);
 
 // User Settings Routes - Serve routes for user settings like theme preference
 app.use(userSettingsRoutes);

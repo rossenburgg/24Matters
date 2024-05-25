@@ -2,6 +2,22 @@ document.addEventListener('DOMContentLoaded', () => {
   // Connecting to WebSocket
   const socket = io();
 
+  // Retrieve user ID from a hidden HTML element or another source
+  const userId = document.body.dataset.userId; // Assuming the user ID is stored in a data attribute on the <body> tag
+
+  if (userId) {
+    // Register the user with their ID for personalized notifications
+    socket.emit('register', userId);
+
+    // Listen for notification count updates
+    socket.on('notification count', (count) => {
+      const notificationIcon = document.querySelector('#notificationIcon'); // Assuming there's an element with ID 'notificationIcon' for showing notification count
+      if (notificationIcon) {
+        notificationIcon.innerText = count; // Update the notification count displayed on the icon
+      }
+    });
+  }
+
   // Listening for task progress updates
   socket.on('taskProgress', (data) => {
     toastr.info(`Task ${data.taskId} is now ${data.status}.`, 'Task Progress');
