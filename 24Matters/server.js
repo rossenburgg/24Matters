@@ -18,6 +18,7 @@ const referralRoutes = require('./routes/referralRoutes'); // Import referralRou
 const adminRoutes = require('./routes/adminRoutes'); // Import adminRoutes
 const loyaltyPointsRoutes = require('./routes/loyaltyPointsRoutes'); // Import loyaltyPointsRoutes
 const dailyRewardRoutes = require('./routes/dailyRewardRoutes'); // Import dailyRewardRoutes
+const themeRoutes = require('./routes/themeRoutes'); // Import themeRoutes
 const notificationMiddleware = require('./routes/middleware/notificationMiddleware'); // Import notificationMiddleware
 const User = require('./models/User'); // Import User model
 const Notification = require('./models/Notification'); // Import Notification model
@@ -90,6 +91,22 @@ app.use((req, res, next) => {
 
 // Make appBaseUrl available to all views
 app.locals.appBaseUrl = process.env.APP_BASE_URL;
+
+// Middleware to include theme preference in all responses
+app.use(async (req, res, next) => {
+  if (req.session.userId) {
+    try {
+      const user = await User.findById(req.session.userId);
+      res.locals.themePreference = user ? user.themePreference : 'light';
+    } catch (error) {
+      console.error("Error fetching user's theme preference:", error);
+      res.locals.themePreference = 'light'; // Default to light theme on error
+    }
+  } else {
+    res.locals.themePreference = 'light'; // Default theme for non-logged-in users
+  }
+  next();
+});
 
 // Socket.io for real-time communication
 io.on('connection', (socket) => {
@@ -192,6 +209,9 @@ app.use('/loyalty', loyaltyPointsRoutes);
 
 // Daily Reward Routes - Serve daily reward functionality
 app.use(dailyRewardRoutes);
+
+// Theme Routes - Serve theme switching functionality
+app.use(themeRoutes);
 
 // If no routes handled the request, it's a 404
 app.use((req, res, next) => {
