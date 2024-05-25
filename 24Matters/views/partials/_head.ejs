@@ -1,7 +1,7 @@
 <head>
   <meta charset="UTF-8">
   <title>24Matters</title>
-  <link rel="stylesheet" id="bootstrap-css" href="/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <link rel="stylesheet" id="bootstrap-theme" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
   <link rel="stylesheet" href="/css/style.css">
   <link rel="stylesheet" href="/css/theme.min.css">
   <link rel="stylesheet" href="/vendor/bootstrap-icons/font/bootstrap-icons.css">
@@ -12,11 +12,14 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const themePreference = '<%= locals.themePreference || "light" %>';
-      const bootstrapLink = document.getElementById('bootstrap-css');
-      const themePath = themePreference === 'dark' ? 
-        "/css/bootstrap-dark.min.css" :
-        "/css/bootstrap.min.css";
-      bootstrapLink.href = themePath;
+      const themeLink = document.getElementById('bootstrap-theme');
+      
+      if (themePreference === 'dark') {
+        themeLink.href = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap-dark.min.css';
+      } else {
+        // Default to light theme if not specified or if preference is 'light'
+        themeLink.href = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css';
+      }
       console.log(`Theme set to ${themePreference}`);
     });
   </script>
