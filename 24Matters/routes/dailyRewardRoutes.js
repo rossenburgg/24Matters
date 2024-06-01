@@ -42,4 +42,27 @@ router.post('/api/claim-daily-reward', isAuthenticated, async (req, res) => {
   }
 });
 
+// Route to check and send daily reward notification
+router.get('/check', isAuthenticated, async (req, res) => {
+  const userId = req.session.userId;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  try {
+    const reward = await DailyReward.findOne({ userId, date: today });
+
+    if (!reward) {
+      // Send daily reward notification
+      await Notification.createNotification(userId, 'Your daily reward is ready to be claimed!');
+
+      res.json({ available: true });
+    } else {
+      res.json({ available: false });
+    }
+  } catch (error) {
+    console.error('Error checking daily reward:', error);
+    res.status(500).send('Internal server error');
+  }
+});
+
 module.exports = router;

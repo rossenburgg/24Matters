@@ -6,15 +6,15 @@
 
 <!-- Bottom Navigation for Mobile Devices -->
 <div class="bottom-nav">
-  <a href="/" class="nav-item active">
+  <a href="/" class="nav-item" id="homeNavItem">
     <i class="bi bi-house bottom-nav-icon"></i>
     <span>Home</span>
   </a>
-  <a href="starting" class="nav-item">
+  <a href="/starting" class="nav-item" id="startingNavItem">
     <i class="bi bi-spotify bottom-nav-icon"></i>
     <span>Starting</span>
   </a>
-  <a href="#records" class="nav-item">
+  <a href="/records" class="nav-item" id="recordsNavItem">
     <i class="bi bi-journal-text bottom-nav-icon"></i>
     <span>Records</span>
   </a>
@@ -38,6 +38,19 @@ document.addEventListener('DOMContentLoaded', function() {
     <% } %>
 
     // Bottom navigation active state
+    function setActiveNavItem() {
+      const path = window.location.pathname;
+      document.querySelectorAll('.bottom-nav a').forEach(function(navItem) {
+        if (navItem.getAttribute('href') === path) {
+          navItem.classList.add('active');
+        } else {
+          navItem.classList.remove('active');
+        }
+      });
+    }
+
+    setActiveNavItem();
+
     document.querySelectorAll('.bottom-nav a').forEach(function(navItem) {
       navItem.addEventListener('click', function() {
         document.querySelector('.bottom-nav .active').classList.remove('active');
@@ -63,28 +76,28 @@ document.addEventListener('DOMContentLoaded', function() {
       z-index: 1000;
       display: flex;
       justify-content: space-around;
-      padding: 10px 0;
+      padding: 5px 0; /* Reduced padding to make it more compact */
       box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3);
     }
 
     .bottom-nav a {
       text-align: center;
       flex-grow: 1;
-      padding: 10px;
+      padding: 5px; /* Reduced padding to make it more compact */
       color: #ccc;
       text-decoration: none;
       transition: color 0.3s ease, transform 0.3s ease;
     }
 
     .bottom-nav a.active, .bottom-nav a:hover {
-      color: #d9ff00m;
+      color: #1DB954; /* Spotify green */
       transform: scale(1.1);
     }
 
     .bottom-nav-icon {
       font-size: 24px;
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 2px; /* Reduced margin to make it more compact */
     }
 
     .bottom-nav span {
@@ -95,5 +108,33 @@ document.addEventListener('DOMContentLoaded', function() {
     .desktop-footer {
       display: none;
     }
+  }
+
+  @media (min-width: 769px) {
+    .bottom-nav {
+      display: none;
+    }
+  }
+
+  /* Make dropdown text white */
+  .dropdown-menu .dropdown-item {
+    color: white;
+    background-color: #343a40; /* Dark background for dropdown items */
+  }
+
+  .dropdown-menu .dropdown-item:hover {
+    background-color: #495057; /* Slightly lighter background on hover */
+  }
+
+  /* Shake animation */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-10px); }
+    40%, 80% { transform: translateX(10px); }
+  }
+
+  .shake {
+    animation: shake 0.5s; /* Duration of shake animation */
+    animation-iteration-count: infinite; /* Keep shaking */
   }
 </style>

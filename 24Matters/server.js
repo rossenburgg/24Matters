@@ -26,6 +26,9 @@ const Notification = require('./models/Notification'); // Import Notification mo
 const http = require('http');
 const { Server } = require("socket.io");
 const startingRoutes = require('./routes/startingRoutes'); // Import startingRoutes
+const ObjectId = mongoose.Types.ObjectId; // Correctly use ObjectId from mongoose.Types
+
+require('./scheduler');
 
 if (!process.env.DATABASE_URL || !process.env.SESSION_SECRET) {
   console.error("Error: config environment variables not set. Please create/edit .env configuration file.");
@@ -105,7 +108,8 @@ io.on('connection', (socket) => {
     console.log('User disconnected');
   });
 
-  socket.on('register', userId => {
+
+  socket.on('register', async (userId) => {
     if (!userId) {
       console.error("Attempt to register socket without userId");
       return;
@@ -113,15 +117,23 @@ io.on('connection', (socket) => {
     // Associate the user ID with the socket ID
     socket.join(userId); // Using rooms to manage user sessions
     console.log(`User ${userId} registered with socket ID ${socket.id}`);
+    Notification.find({ userId: userId, read: false }).count()
+      .then(unreadCount => {
+        io.to(userId).emit('notification count', unreadCount);
+      })
+      .catch(error => {
+        console.error(`Error fetching initial unread notifications for user ${userId}: ${error}`);
+      });
 
-    // Emit unread notification count upon user registration
-    Notification.find({ userId: userId, read: false }).count().then(unreadCount => {
+
+    try {
+      const unreadCount = await Notification.countDocuments({ userId: new ObjectId(userId), read: false });
       io.to(userId).emit('notification count', unreadCount);
       console.log(`Emitted initial notification count ${unreadCount} for user ${userId}`);
-    }).catch(error => {
+    } catch (error) {
       console.error(`Error fetching initial unread notifications for user ${userId}: ${error}`);
       console.error(error.stack);
-    });
+    }
   });
 
   // Listen for balance update requests and emit updates to the specific user

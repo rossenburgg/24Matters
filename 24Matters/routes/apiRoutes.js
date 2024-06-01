@@ -7,6 +7,9 @@ const { isAuthenticated } = require('./middleware/authMiddleware');
 const { fetchUnreadNotificationsPaginated } = require('../services/notificationService');
 const Notification = require('../models/Notification'); // Importing the Notification model
 const router = express.Router();
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId; // Correctly use ObjectId from mongoose.Types
+
 
 // Serve analytics data for the dashboard
 router.get('/analytics/data', async (req, res) => {
@@ -49,6 +52,26 @@ router.get('/item/:id', async (req, res) => {
   } catch (err) {
     console.error(`Error fetching item details for item ID ${req.params.id}:`, err);
     console.error(err.stack);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+router.get('/items', isAuthenticated, async (req, res) => {
+  try {
+    const { page = 1, limit = 10, search = '' } = req.query;
+    const query = search ? { name: { $regex: search, $options: 'i' } } : {};
+
+    const items = await Item.find(query)
+      .skip((page - 1) * limit)
+      .limit(parseInt(limit))
+      .exec();
+
+    const totalItems = await Item.countDocuments(query);
+    const totalPages = Math.ceil(totalItems / limit);
+
+    res.json({ items, totalPages, currentPage: parseInt(page) });
+  } catch (err) {
+    console.error('Error fetching items:', err);
     res.status(500).send('Internal Server Error');
   }
 });
@@ -122,30 +145,66 @@ router.get('/notifications/unread', isAuthenticated, async (req, res) => {
   }
 });
 
-// New route for fetching user-specific notifications with pagination
-router.get('/notifications', isAuthenticated, async (req, res) => {
-  const userId = req.session.userId;
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const skip = (page - 1) * limit;
 
+
+// Fetch notifications
+router.get('/notifications', isAuthenticated, async (req, res) => {
   try {
-    const notifications = await Notification.find({ userId }).sort({ createdAt: -1 }).skip(skip).limit(limit);
-    const totalNotifications = await Notification.countDocuments({ userId });
+    const userId = req.session.userId;
+    if (!userId) {
+      return res.status(400).json({ success: false, message: 'User ID is required' });
+    }
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    console.log('Fetching notifications for user:', userId);
+
+    // Query userId as a string
+    const notifications = await Notification.find({ userId: userId }).sort({ createdAt: -1 }).skip(skip).limit(limit);
+    const totalNotifications = await Notification.countDocuments({ userId: userId });
+    const totalPages = Math.ceil(totalNotifications / limit);
+
+    // Mark notifications as read
+    await Notification.updateMany({ userId: userId, read: false }, { $set: { read: true } });
+
+    console.log('Notifications found:', notifications.length, notifications);
+
     res.status(200).json({
       success: true,
       notifications: notifications,
       pageInfo: {
         currentPage: page,
-        totalPages: Math.ceil(totalNotifications / limit),
+        totalPages,
         totalNotifications,
       },
     });
   } catch (error) {
     console.error('Failed to fetch notifications:', error);
-    console.error(error.stack);
     res.status(500).json({ success: false, message: 'Failed to fetch notifications' });
   }
 });
+
+
+// Mark notifications as read
+router.post('/notifications/markAsRead', isAuthenticated, async (req, res) => {
+  try {
+    const { notificationIds } = req.body;
+
+    await Notification.updateMany(
+      { _id: { $in: notificationIds }, userId: req.session.userId },
+      { $set: { read: true } }
+    );
+
+    res.json({ success: true, message: 'Notifications marked as read' });
+  } catch (error) {
+    console.error('Error marking notifications as read:', error);
+    res.status(500).json({ success: false, message: 'Error marking notifications as read' });
+  }
+});
+
+
+
 
 module.exports = router;

@@ -5,6 +5,7 @@ const nodemailer = require('nodemailer');
 const speakeasy = require('speakeasy');
 const qrcode = require('qrcode');
 const router = express.Router();
+const Notification = require('../models/Notification');
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -50,6 +51,10 @@ router.post('/auth/register', async (req, res) => {
       referringUser.referrals.push(newUser._id);
       await referringUser.save();
     }
+
+    // Send welcome notification
+    await Notification.createNotification(newUser._id, 'Welcome to 24Matters! Your account has been successfully created.');
+
     req.session.successMessage = 'Registration successful! Please log in.'; // Setting a success message
     res.redirect('/auth/login'); // Redirect to login with success message
   } catch (error) {

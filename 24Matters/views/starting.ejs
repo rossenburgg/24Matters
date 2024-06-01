@@ -90,6 +90,46 @@
     .activity-section h4 {
       margin: 0 0 10px 0;
     }
+    .pagination-info {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .search-bar {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .search-bar input {
+      width: 100%;
+      max-width: 300px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: #333;
+      color: #fff;
+    }
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .pagination button {
+      background-color: #444;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .pagination button:hover {
+      background-color: #555;
+    }
+    .pagination button[disabled] {
+      cursor: not-allowed;
+      background-color: #333;
+    }
     .activity-cards {
       display: none;
       flex-wrap: wrap;
@@ -262,7 +302,11 @@
     <!-- Activity Section -->
     <div class="activity-section">
       <h4>Start Optimization</h4>
-      <p>1/45</p>
+      <p class="pagination-info" id="paginationInfo">Page 1/1</p>
+    </div>
+    <!-- Search Bar -->
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search items...">
     </div>
     <!-- Skeleton Loading -->
     <div id="skeletonContainer">
@@ -283,20 +327,12 @@
       </div>
     </div>
     <!-- Activity Cards -->
-    <div class="activity-cards">
-      <% items.forEach(function(item) { %>
-        <div class="activity-card" data-item-id="<%= item._id %>">
-          <img src="<%= item.picture %>" alt="<%= item.name %>">
-          <h3><%= item.name %></h3>
-          <div class="details">
-            <p>Price: <%= item.price %> USDT</p>
-            <p>Total Amount: <%= item.totalAmount %> USDT</p>
-            <p>Commission: <%= item.commission %> USDT</p>
-            <p>Created at: <%= new Date(item.createdAt).toLocaleDateString() %></p>
-            <p>Task Code: <%= item.taskCode || 'N/A' %></p>
-          </div>
-        </div>
-      <% }); %>
+    <div class="activity-cards" id="activityCardsContainer">
+      <!-- Items will be populated here by JavaScript -->
+    </div>
+    <!-- Pagination -->
+    <div class="pagination" id="paginationContainer">
+      <!-- Pagination buttons will be populated here by JavaScript -->
     </div>
   </div>
 
@@ -327,11 +363,14 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/shepherd.js/8.0.0/js/shepherd.js"></script>
   <script src="/js/main.js"></script>
   <script src="/vendor/typed.js/lib/typed.min.js"></script>
+  
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Check if the user has seen the tour
+      let currentPage = 1;
+      const limit = 10;
+
+      // Initialize tour
       if (!localStorage.getItem('tourSeen')) {
-        // Define the tour
         const tour = new Shepherd.Tour({
           useModalOverlay: true,
           defaultStepOptions: {
@@ -343,12 +382,26 @@
           }
         });
 
-        // Define steps
         tour.addStep({
           id: 'welcome',
           text: 'Welcome to the Starting page! Let me show you around.',
+          buttons: [
+            {
+              text: 'Next',
+              action: tour.next
+            }
+          ]
+        });
+
+        tour.addStep({
+          id: 'profile-info',
+          text: 'Here you can see your profile information.',
           attachTo: { element: '.profile-info', on: 'bottom' },
           buttons: [
+            {
+              text: 'Back',
+              action: tour.back
+            },
             {
               text: 'Next',
               action: tour.next
@@ -382,46 +435,121 @@
               action: tour.back
             },
             {
+              text: 'Next',
+              action: tour.next
+            }
+          ]
+        });
+
+        tour.addStep({
+          id: 'activity-cards',
+          text: 'Here are the available activities. Click on a card to view more details and start.',
+          attachTo: { element: '.activity-cards', on: 'top' },
+          buttons: [
+            {
+              text: 'Back',
+              action: tour.back
+            },
+            {
               text: 'Finish',
               action: tour.complete
             }
           ]
         });
 
-        // Start the tour
         tour.start();
-
-        // Mark tour as seen
         localStorage.setItem('tourSeen', 'true');
       }
 
-      // Simulate data fetching
-      setTimeout(() => {
-        document.getElementById('skeletonContainer').style.display = 'none';
-        document.querySelector('.activity-cards').style.display = 'flex';
-      }, 2000);
+      // Fetch items
+      function fetchItems(page = 1, search = '') {
+        console.log('Fetching items...', { page, search });
+        document.getElementById('skeletonContainer').style.display = 'flex';
+        document.querySelector('.activity-cards').style.display = 'none';
 
-      // Handle item click to open modal
-      document.querySelectorAll('.activity-card').forEach(function(card) {
-        card.addEventListener('click', function() {
-          const itemId = this.getAttribute('data-item-id');
-          fetch(`/api/item/${itemId}`)
-            .then(response => response.json())
-            .then(data => {
-              document.getElementById('modalItemDetails').innerHTML = `
-                <img src="${data.picture}" alt="${data.name}" style="width: 50px; height: 50px; border-radius: 8px; margin-bottom: 10px;">
-                <h4>${data.name}</h4>
-                <p>Price: ${data.price} USDT</p>
-                <p>Total Amount: ${data.totalAmount} USDT</p>
-                <p>Commission: ${data.commission} USDT</p>
-                <p>Created at: ${new Date(data.createdAt).toLocaleDateString()}</p>
-                <p>Task Code: ${data.taskCode || 'N/A'}</p>
+        fetch(`/api/items?page=${page}&limit=${limit}&search=${search}`)
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then(data => {
+            const activityCardsContainer = document.getElementById('activityCardsContainer');
+            const paginationContainer = document.getElementById('paginationContainer');
+            const paginationInfo = document.getElementById('paginationInfo');
+
+            // Clear previous items and pagination
+            activityCardsContainer.innerHTML = '';
+            paginationContainer.innerHTML = '';
+
+            // Update pagination info
+            paginationInfo.innerText = `Page ${data.currentPage}/${data.totalPages}`;
+
+            // Populate items
+            data.items.forEach(item => {
+              const card = document.createElement('div');
+              card.classList.add('activity-card');
+              card.setAttribute('data-item-id', item._id);
+              card.innerHTML = `
+                <img src="${item.picture}" alt="${item.name}">
+                <h3>${item.name}</h3>
+                <div class="details">
+                  <p>Price: ${item.price} USDT</p>
+                  <p>Total Amount: ${item.totalAmount} USDT</p>
+                  <p>Commission: ${item.commission} USDT</p>
+                  <p>Created at: ${new Date(item.createdAt).toLocaleDateString()}</p>
+                  <p>Task Code: ${item.taskCode || 'N/A'}</p>
+                </div>
               `;
-              document.querySelector('.purchase-button').setAttribute('data-item-id', data._id);
-              new bootstrap.Modal(document.getElementById('itemDetailsModal')).show();
-            })
-            .catch(error => console.error('Error fetching item details:', error));
-        });
+              activityCardsContainer.appendChild(card);
+
+              card.addEventListener('click', function() {
+                fetch(`/api/item/${item._id}`)
+                  .then(response => response.json())
+                  .then(data => {
+                    document.getElementById('modalItemDetails').innerHTML = `
+                      <img src="${data.picture}" alt="${data.name}" style="width: 50px; height: 50px; border-radius: 8px; margin-bottom: 10px;">
+                      <h4>${data.name}</h4>
+                      <p>Price: ${data.price} USDT</p>
+                      <p>Total Amount: ${data.totalAmount} USDT</p>
+                      <p>Commission: ${data.commission} USDT</p>
+                      <p>Created at: ${new Date(data.createdAt).toLocaleDateString()}</p>
+                      <p>Task Code: ${data.taskCode || 'N/A'}</p>
+                    `;
+                    document.querySelector('.purchase-button').setAttribute('data-item-id', data._id);
+                    new bootstrap.Modal(document.getElementById('itemDetailsModal')).show();
+                  })
+                  .catch(error => console.error('Error fetching item details:', error));
+              });
+            });
+
+            // Populate pagination
+            for (let i = 1; i <= data.totalPages; i++) {
+              const button = document.createElement('button');
+              button.innerText = i;
+              button.disabled = i === data.currentPage;
+              button.addEventListener('click', () => fetchItems(i, search));
+              paginationContainer.appendChild(button);
+            }
+
+            document.getElementById('skeletonContainer').style.display = 'none';
+            document.querySelector('.activity-cards').style.display = 'flex';
+          })
+          .catch(error => {
+            console.error('Error fetching items:', error);
+            toastr.error('Failed to load items');
+            document.getElementById('skeletonContainer').style.display = 'none';
+          });
+      }
+
+      // Initial fetch
+      fetchItems();
+
+      // Search functionality
+      document.getElementById('searchInput').addEventListener('input', function() {
+        const searchValue = this.value;
+        fetchItems(1, searchValue);
       });
 
       // Handle purchase button click
