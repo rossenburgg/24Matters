@@ -1,8 +1,26 @@
-<footer class="footer fixed-bottom bg-light">
-  <div class="container text-center my-2">
+<footer class="footer bg-dark">
+  <div class="container text-center my-2 desktop-footer">
     <span>Copyright &copy; <%= 1900 + new Date().getYear() %> 24Matters</span>
   </div>
 </footer>
+
+<!-- Bottom Navigation for Mobile Devices -->
+<div class="bottom-nav">
+  <a href="/" class="nav-item active">
+    <i class="bi bi-house bottom-nav-icon"></i>
+    <span>Home</span>
+  </a>
+  <a href="starting" class="nav-item">
+    <i class="bi bi-spotify bottom-nav-icon"></i>
+    <span>Starting</span>
+  </a>
+  <a href="#records" class="nav-item">
+    <i class="bi bi-journal-text bottom-nav-icon"></i>
+    <span>Records</span>
+  </a>
+</div>
+
+<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 <script src="/js/theme-custom.js"></script>
 <!-- Include Toastr JS and other dependencies -->
@@ -18,5 +36,64 @@ document.addEventListener('DOMContentLoaded', function() {
             toastr.<%= notification.type %>('<%= notification.message %>');
         <% }); %>
     <% } %>
+
+    // Bottom navigation active state
+    document.querySelectorAll('.bottom-nav a').forEach(function(navItem) {
+      navItem.addEventListener('click', function() {
+        document.querySelector('.bottom-nav .active').classList.remove('active');
+        navItem.classList.add('active');
+      });
+    });
 });
 </script>
+
+<style>
+  .bottom-nav {
+    display: none;
+  }
+
+  @media (max-width: 768px) {
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: #1a1a1a;
+      border-top: 1px solid #444;
+      z-index: 1000;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .bottom-nav a {
+      text-align: center;
+      flex-grow: 1;
+      padding: 10px;
+      color: #ccc;
+      text-decoration: none;
+      transition: color 0.3s ease, transform 0.3s ease;
+    }
+
+    .bottom-nav a.active, .bottom-nav a:hover {
+      color: #d9ff00m;
+      transform: scale(1.1);
+    }
+
+    .bottom-nav-icon {
+      font-size: 24px;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .bottom-nav span {
+      font-size: 12px;
+      display: block;
+    }
+
+    .desktop-footer {
+      display: none;
+    }
+  }
+</style>

@@ -20,10 +20,12 @@ const loyaltyPointsRoutes = require('./routes/loyaltyPointsRoutes'); // Import l
 const dailyRewardRoutes = require('./routes/dailyRewardRoutes'); // Import dailyRewardRoutes
 const themeRoutes = require('./routes/themeRoutes'); // Import themeRoutes
 const notificationMiddleware = require('./routes/middleware/notificationMiddleware'); // Import notificationMiddleware
+const themeMiddleware = require('./routes/middleware/themeMiddleware'); // Import themeMiddleware
 const User = require('./models/User'); // Import User model
 const Notification = require('./models/Notification'); // Import Notification model
 const http = require('http');
 const { Server } = require("socket.io");
+const startingRoutes = require('./routes/startingRoutes'); // Import startingRoutes
 
 if (!process.env.DATABASE_URL || !process.env.SESSION_SECRET) {
   console.error("Error: config environment variables not set. Please create/edit .env configuration file.");
@@ -44,6 +46,7 @@ app.set("view engine", "ejs");
 
 // Serve static files
 app.use(express.static("public"));
+
 
 // Database connection
 mongoose
@@ -92,21 +95,8 @@ app.use((req, res, next) => {
 // Make appBaseUrl available to all views
 app.locals.appBaseUrl = process.env.APP_BASE_URL;
 
-// Middleware to include theme preference in all responses
-app.use(async (req, res, next) => {
-  if (req.session.userId) {
-    try {
-      const user = await User.findById(req.session.userId);
-      res.locals.themePreference = user ? user.themePreference : 'light';
-    } catch (error) {
-      console.error("Error fetching user's theme preference:", error);
-      res.locals.themePreference = 'light'; // Default to light theme on error
-    }
-  } else {
-    res.locals.themePreference = 'light'; // Default theme for non-logged-in users
-  }
-  next();
-});
+// Apply the themeMiddleware globally
+app.use(themeMiddleware);
 
 // Socket.io for real-time communication
 io.on('connection', (socket) => {
@@ -164,6 +154,8 @@ io.on('connection', (socket) => {
   // Set up to emit events for balance and task updates
   app.set('socketio', io); // Make io accessible in route handlers
 });
+
+app.use(startingRoutes);
 
 // Apply the notificationMiddleware globally
 app.use(notificationMiddleware);

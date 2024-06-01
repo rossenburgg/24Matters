@@ -60,13 +60,13 @@ router.post('/purchase/:id', isAuthenticated, async (req, res) => {
     const item = await Item.findById(itemId);
     if (!item) {
       console.log(`Item with ID ${itemId} not found`);
-      return res.status(404).json({ message: 'Item not found' });
+      return res.status(404).json({ success: false, message: 'Item not found' });
     }
 
     const user = await User.findById(req.session.userId);
     if (user.balance < item.price) {
       console.log('Insufficient balance for purchase');
-      return res.status(400).json({ message: 'Insufficient balance' });
+      return res.status(400).json({ success: false, message: 'Insufficient balance' });
     }
 
     // Deduct item price from user's balance
@@ -84,18 +84,19 @@ router.post('/purchase/:id', isAuthenticated, async (req, res) => {
       await user.save();
       await purchase.save();
       console.log(`Purchase record created for user ${req.session.userId} and item ${itemId}`);
-      res.json({ message: 'Purchase successful, awaiting admin confirmation', newBalance: user.balance });
+      res.json({ success: true, message: 'Purchase successful, awaiting admin confirmation', newBalance: user.balance });
     } catch (err) {
       console.error('Error updating user balance or creating purchase record:', err);
       console.error(err.stack);
-      res.status(500).json({ message: 'Error processing purchase' });
+      res.status(500).json({ success: false, message: 'Error processing purchase' });
     }
   } catch (error) {
     console.error('Error processing purchase:', error);
     console.error(error.stack);
-    res.status(500).json({ message: 'Error processing purchase' });
+    res.status(500).json({ success: false, message: 'Error processing purchase' });
   }
 });
+
 
 // Route for fetching unread notifications with pagination
 router.get('/notifications/unread', isAuthenticated, async (req, res) => {
