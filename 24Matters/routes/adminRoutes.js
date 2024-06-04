@@ -38,9 +38,14 @@ router.get('/admin/purchases', [isAuthenticated, isAdminMiddleware], async (req,
   }
 });
 
+
 // Admin Announcements Route
 router.get('/admin/announcements', [isAuthenticated, isAdminMiddleware], (req, res) => {
   res.render('admin/announcements');
+});
+
+router.get('/admin', [isAuthenticated, isAdminMiddleware], (req, res) => {
+  res.render('admin/home');
 });
 
 // Route to handle posting of announcements
@@ -76,6 +81,7 @@ router.get('/admin/reports', [isAuthenticated, isAdminMiddleware], (req, res) =>
 // Route to confirm a purchase
 router.post('/admin/purchase/:id/confirm', [isAuthenticated, isAdminMiddleware], async (req, res) => {
   try {
+    console.log('Confirm purchase route hit');
     const purchaseId = req.params.id;
     const purchase = await Purchase.findById(purchaseId).populate('itemId').populate('userId');
     if (!purchase) {
@@ -97,6 +103,7 @@ router.post('/admin/purchase/:id/confirm', [isAuthenticated, isAdminMiddleware],
 // Route to reject a purchase
 router.post('/admin/purchase/:id/reject', [isAuthenticated, isAdminMiddleware], async (req, res) => {
   try {
+    console.log('Reject purchase route hit');
     const purchaseId = req.params.id;
     await Purchase.findByIdAndUpdate(purchaseId, { status: 'rejected' });
     console.log(`Purchase ${purchaseId} rejected`);
@@ -106,6 +113,7 @@ router.post('/admin/purchase/:id/reject', [isAuthenticated, isAdminMiddleware], 
     res.status(500).json({ success: false, message: 'Error rejecting purchase.', error: error.message });
   }
 });
+
 
 // Placeholder for edit user route
 router.get('/admin/users/edit/:id', [isAuthenticated, isAdminMiddleware], async (req, res) => {

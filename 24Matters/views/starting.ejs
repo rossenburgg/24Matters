@@ -5,6 +5,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shepherd.js/8.0.0/css/shepherd.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.13/lottie.min.js"></script>
+
   <style>
     body {
       background-color: #121212;
@@ -37,11 +39,32 @@
       background-color: #222;
       border-radius: 8px;
       margin-bottom: 20px;
+      position: relative;
     }
-    .profile-info img {
-      border-radius: 50%;
-      height: 50px;
+    .profile-info .avatar-container {
+      position: relative;
+      width: 60px;
+      height: 60px;
       margin-right: 10px;
+    }
+    .profile-info .avatar {
+      border-radius: 50%;
+      width: 70%;
+      height: 70%;
+      top: 51%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      position: absolute;
+    }
+    .profile-info .lottie-avatar-frame {
+      position: absolute;
+      width: 70px;
+      height: 70px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
     }
     .profile-info h3 {
       margin: 0;
@@ -273,8 +296,11 @@
   <div class="content">
     <!-- Profile Info -->
     <div class="profile-info">
-      <img src="https://via.placeholder.com/50" alt="Profile Image">
-      <h3>Hi, <%= user.username %> <span class="vip">VIP2</span></h3>
+      <div class="avatar-container">
+        <div id="lottie-avatar-frame" class="lottie-avatar-frame"></div>
+        <img class="avatar" src="https://via.placeholder.com/50" alt="Profile Image">
+      </div>
+      <h3>Hi, <%= user.username %> <span class="vip"><%= user.tier %></span></h3>
     </div>
     <!-- Wallet Info -->
     <div class="wallet-info">
@@ -568,6 +594,43 @@
             console.error('Error making purchase:', error);
             toastr.error('Purchase failed!');
           });
+      });
+
+      // Initialize Lottie animation
+      var tier = "<%= user.tier %>";
+      var lottiePath;
+      var lottieSize;
+
+      switch(tier) {
+        case 'VIP1':
+          lottiePath = '/Animations/vip1.json';
+          lottieSize = { width: '81px', height: '81px' }; // Adjusted size for VIP1
+          break;
+        case 'VIP2':
+          lottiePath = '/Animations/vip2.json';
+          lottieSize = { width: '70px', height: '70px' }; // Current size for VIP2
+          break;
+        case 'VIP3':
+          lottiePath = '/Animations/vip3.json';
+          lottieSize = { width: '100px', height: '100px' }; // Adjusted size for VIP3
+          break;
+        default:
+          lottiePath = '/Animations/frames.json'; // default frame
+          lottieSize = { width: '70px', height: '70px' }; // Default size
+      }
+
+      console.log('Loading Lottie animation from path:', lottiePath);
+
+      var lottieFrame = document.getElementById('lottie-avatar-frame');
+      lottieFrame.style.width = lottieSize.width;
+      lottieFrame.style.height = lottieSize.height;
+
+      lottie.loadAnimation({
+        container: lottieFrame,
+        renderer: 'svg',
+        loop: true,
+        autoplay: true,
+        path: lottiePath
       });
     });
   </script>

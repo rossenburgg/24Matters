@@ -22,8 +22,8 @@ router.post('/send-referral', async (req, res) => {
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to: email,
-      subject: 'Join 24Matters and start earning today!',
-      html: `Hello,<br><br>Join me on 24Matters and start managing your cryptocurrency effectively.<br><a href="${referralLink}">Click here to sign up</a><br><br>Best,<br>${user.username}`,
+      subject: 'Join 42Matters and start earning today!',
+      html: `Hello,<br><br>Join me on 42Matters and start managing your cryptocurrency effectively.<br><a href="${referralLink}">Click here to sign up</a><br><br>Best,<br>${user.username}`,
     });
     console.log(`Referral email sent successfully to ${email}.`);
     res.send('Referral email sent successfully.');

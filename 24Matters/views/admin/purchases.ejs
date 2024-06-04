@@ -3,74 +3,140 @@
 <head>
   <%- include('../partials/_head.ejs') %>
   <title>Admin - Pending Purchases</title>
+  <style>
+    body {
+      background-color: #121212;
+      color: #E0E0E0;
+      font-family: 'Roboto', sans-serif;
+    }
+    .container {
+      padding: 20px;
+    }
+    h1 {
+      color: #1DB954;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .list-group-item {
+      background-color: #1E1E1E;
+      border: 1px solid #2E2E2E;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      padding: 15px;
+      transition: background-color 0.3s;
+    }
+    .list-group-item:hover {
+      background-color: #333;
+    }
+    .list-group-item h5 {
+      color: #1DB954;
+      margin-bottom: 10px;
+    }
+    .list-group-item small {
+      color: #ccc;
+    }
+    .btn-success {
+      background-color: #1DB954;
+      border-color: #1DB954;
+      color: #121212;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    .btn-success:hover {
+      background-color: #17a74a;
+      border-color: #17a74a;
+    }
+    .btn-danger {
+      background-color: #dc3545;
+      border-color: #dc3545;
+      color: #ffffff;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    .btn-danger:hover {
+      background-color: #c82333;
+      border-color: #bd2130;
+    }
+    .no-pending-purchases {
+      text-align: center;
+      font-size: 1.2em;
+      color: #ccc;
+      margin-top: 50px;
+    }
+    .purchase-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .purchase-card div {
+      flex: 1;
+    }
+    .purchase-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+  </style>
 </head>
 <body>
-  <%- include('../partials/adminHeader.ejs') %>
+  <%- include('../partials/_header.ejs') %>
   <div class="container mt-5">
     <h1>Pending Purchases</h1>
     <div class="list-group">
       <% if (pendingPurchases && pendingPurchases.length > 0) { %>
         <% pendingPurchases.forEach(function(purchase) { %>
-          <div class="list-group-item list-group-item-action flex-column align-items-start">
-            <div class="d-flex w-100 justify-content-between">
-              <h5 class="mb-1">Item: <%= purchase.itemId.name %></h5>
-              <small>Purchase Date: <%= new Date(purchase.createdAt).toDateString() %></small>
+          <div class="list-group-item purchase-card">
+            <div>
+              <h5 class="mb-1">Item: <%= purchase.itemId ? purchase.itemId.name : 'Unknown Item' %></h5>
+              <p class="mb-1">Price: <%= purchase.itemId ? purchase.itemId.price : 'N/A' %> USDT</p>
+              <p class="mb-1">Buyer: <%= purchase.userId ? purchase.userId.username : 'Unknown User' %></p>
             </div>
-            <p class="mb-1">Price: <%= purchase.itemId.price %> USDT</p>
-            <p class="mb-1">Buyer: <%= purchase.userId.username %></p>
-            <button class="btn btn-success btn-sm confirm-purchase" data-purchase-id="<%= purchase._id %>">Confirm</button>
-            <button class="btn btn-danger btn-sm reject-purchase" data-purchase-id="<%= purchase._id %>">Reject</button>
+            <div class="purchase-actions">
+              <button class="btn btn-success btn-sm" onclick="confirmPurchase('<%= purchase._id %>')">Confirm</button>
+              <button class="btn btn-danger btn-sm" onclick="rejectPurchase('<%= purchase._id %>')">Reject</button>
+            </div>
+            <small>Purchase Date: <%= new Date(purchase.createdAt).toDateString() %></small>
           </div>
         <% }); %>
       <% } else { %>
-        <p>No pending purchases.</p>
+        <p class="no-pending-purchases">No pending purchases.</p>
       <% } %>
     </div>
   </div>
   <%- include('../partials/_footer.ejs') %>
-  <script src="/js/adminPurchases.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      document.querySelectorAll('.confirm-purchase').forEach(button => {
-        button.addEventListener('click', function() {
-          const purchaseId = this.dataset.purchaseId;
-          fetch(`/admin/purchase/${purchaseId}/confirm`, { method: 'POST' })
-            .then(response => response.json())
-            .then(data => {
-              if (data.success) {
-                alert('Purchase confirmed successfully.');
-                window.location.reload();
-              } else {
-                alert('Failed to confirm purchase.');
-              }
-            })
-            .catch(error => {
-              console.error('Error confirming purchase:', error);
-              alert('Error confirming purchase.');
-            });
+    function confirmPurchase(purchaseId) {
+      fetch(`/admin/purchase/${purchaseId}/confirm`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert('Purchase confirmed successfully.');
+            window.location.reload();
+          } else {
+            alert('Failed to confirm purchase.');
+          }
+        })
+        .catch(error => {
+          console.error('Error confirming purchase:', error);
+          alert('Error confirming purchase.');
         });
-      });
+    }
 
-      document.querySelectorAll('.reject-purchase').forEach(button => {
-        button.addEventListener('click', function() {
-          const purchaseId = this.dataset.purchaseId;
-          fetch(`/admin/purchase/${purchaseId}/reject`, { method: 'POST' })
-            .then(response => response.json())
-            .then(data => {
-              if (data.success) {
-                alert('Purchase rejected successfully.');
-                window.location.reload();
-              } else {
-                alert('Failed to reject purchase.');
-              }
-            })
-            .catch(error => {
-              console.error('Error rejecting purchase:', error);
-              alert('Error rejecting purchase.');
-            });
+    function rejectPurchase(purchaseId) {
+      fetch(`/admin/purchase/${purchaseId}/reject`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert('Purchase rejected successfully.');
+            window.location.reload();
+          } else {
+            alert('Failed to reject purchase.');
+          }
+        })
+        .catch(error => {
+          console.error('Error rejecting purchase:', error);
+          alert('Error rejecting purchase.');
         });
-      });
-    });
+    }
   </script>
 </body>
 </html>

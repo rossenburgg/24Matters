@@ -4,6 +4,7 @@
   <%- include('./partials/_head.ejs') %>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.13/lottie.min.js"></script>
   <style>
     body {
       background-color: #121212;
@@ -75,7 +76,7 @@
       display: block;
     }
     .page-header {
-      background-color: #1E1E1E;
+      background: linear-gradient(135deg, #1DB954 0%, #1a472a 100%);
       padding: 20px;
       border-radius: 8px; /* Add border-radius */
       margin-bottom: 20px;
@@ -87,8 +88,28 @@
       border-radius: 8px; /* Add border-radius */
       width: 100%;
     }
+    .avatar-container {
+      position: relative;
+      width: 160px;
+      height: 160px;
+      margin: auto;
+    }
     .avatar {
       border: 2px solid #1DB954;
+      border-radius: 50%;
+      position: absolute;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+    }
+    .lottie-avatar-frame {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 160px;
+      height: 160px;
+      z-index: 1;
     }
     .settings-btn {
       background-color: #1DB954;
@@ -116,6 +137,21 @@
     .nav-segment .nav-link.active {
       background-color: #1DB954;
       color: #121212;
+    }
+    @media (max-width: 768px) {
+      .page-header .d-flex {
+        flex-direction: column;
+        align-items: center;
+      }
+      .avatar-container {
+        margin-bottom: 10px;
+      }
+      .button-group {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 10px;
+      }
     }
   </style>
 </head>
@@ -170,186 +206,82 @@
     <div class="container">
       <!-- Page Header -->
       <div class="page-header">
-        <!-- Profile Cover -->
-        <div class="profile-cover">
-          <div class="profile-cover-img-wrapper">
-            <img class="profile-cover-img" src="/img/1920x400/img1.jpg" alt="Image Description">
+        <div class="d-flex">
+          <div class="avatar-container mb-2 mb-sm-0">
+            <div id="lottie-avatar-frame" class="lottie-avatar-frame"></div>
+            <img class="avatar avatar-xl" src="/img/160x160/img3.jpg" alt="Profile Picture">
           </div>
-        </div>
-        <!-- End Profile Cover -->
-
-        <!-- Media -->
-        <div class="d-sm-flex align-items-lg-center pt-1 px-3 pb-3">
-          <div class="flex-shrink-0 mb-2 mb-sm-0 me-4">
-            <img class="avatar avatar-xl avatar-circle" src="/img/160x160/img3.jpg" alt="Image Description">
-          </div>
-
-          <div class="flex-grow-1">
-            <div class="row">
-              <div class="col-md mb-3 mb-md-0">
-                <h1 class="h2 mb-1 text-white">Welcome, <%= username %>!
-                  <picture>
-                    <source srcset="https://fonts.gstatic.com/s/e/notoemoji/latest/1f44b/512.webp" type="image/webp">
-                    <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f44b/512.gif" alt="👋" width="32" height="32">
-                  </picture>
-                </h1>
-
-                <!-- Rating -->
-                <div class="d-flex gap-1">
-                  <span class="fw-semibold text-white ms-1">Balance: <span id="balance"><%= balance %></span> USDT</span>
-                </div>
-                <span class="fw-semibold text-white ms-1">Status: <%= accountStatus %></span>
-                <p class="fw-semibold text-white ms-1">Commission: <span id="commission"><%= commission %></span> USDT</p>
-                <p class="fw-semibold text-white ms-1">Referral Rewards: <%= user.rewards %></p>
-                <p class="fw-semibold text-white ms-1">Loyalty Points: <%= user.loyaltyPoints %></p>
-                <% if (user.loyaltyPoints >= 100) { %>
-                  <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#redeemPointsModal">Redeem Points</button>
-                <% } %>
-                <!-- End Rating -->
-              </div>
-              <!-- End Col -->
-
-              <div class="col-md-auto align-self-md-end">
-                <div class="d-grid d-sm-flex gap-2">
-                  <% if (!dailyRewardClaimed) { %>
-                    <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#dailyrewardmodal">Daily rewards</a>
-                  <% } else { %>
-                    <p>Reward already claimed today.</p>
-                  <% } %>
-                  <div id="dailyrewardmodal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dailyrewardmodal" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h5 class="modal-title" id="dailyrewardmodal">Daily reward</h5>
-                          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body d-flex flex-column align-items-center">
-                          <img src="/svg/illustrations/oc-money-profits.svg" />
-                          <p class="text-center">Daily reward ready!</p>
-                          <button class="btn btn-primary" id="claimDailyReward">Claim daily reward</button>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-white" data-bs-dismiss="modal">Close</button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <a class="btn settings-btn" data-bs-toggle="offcanvas" data-bs-target="#settingsOffcanvas" aria-controls="settingsOffcanvas" href="#">
-                    <i class="bi bi-gear me-1"></i>Settings
-                  </a>
-                  <!-- Offcanvas -->
-                  <div class="offcanvas offcanvas-start" tabindex="-1" id="settingsOffcanvas" aria-labelledby="offcanvasExampleLabel">
-                    <div class="offcanvas-header">
-                      <h5 class="offcanvas-title" id="offcanvasExampleLabel">Offcanvas</h5>
-                      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-                    </div>
-                    <div class="offcanvas-body">
-                      <div>
-                        Some text as placeholder. In real life you can have the elements you have chosen. Like, text, images, lists, etc.
-                      </div>
-                      <div class="dropdown mt-3">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
-                          Dropdown button
-                        </button>
-                        <ul class="dropdown-menu">
-                          <li><a class="dropdown-item" href="#">Action</a></li>
-                          <li><a class="dropdown-item" href="#">Another action</a></li>
-                          <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        </ul>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- End Col -->
+          <div class="flex-grow-1 ms-3">
+            <h1 class="h2 mb-1 text-white">Welcome, <%= username %>!
+              <picture>
+                <source srcset="https://fonts.gstatic.com/s/e/notoemoji/latest/1f44b/512.webp" type="image/webp">
+                <img src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f44b/512.gif" alt="👋" width="32" height="32">
+              </picture>
+            </h1>
+            <div class="d-flex gap-1">
+              <span class="fw-semibold text-white ms-1">Balance: <span id="balance"><%= balance %></span> USDT</span>
             </div>
-            <!-- End Row -->
+            <span class="fw-semibold text-white ms-1">Status: <%= accountStatus %></span>
+            <p class="fw-semibold text-white ms-1">Commission: <span id="commission"><%= commission %></span> USDT</p>
+            <p class="fw-semibold text-white ms-1">Referral Rewards: <%= user.rewards %></p>
+            <p class="fw-semibold text-white ms-1">Loyalty Points: <%= user.loyaltyPoints %></p>
+            <p class="fw-semibold text-white ms-1">Tier: <%= user.tier %></p> <!-- Display user tier -->
+            <% if (user.loyaltyPoints >= 100) { %>
+              <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#redeemPointsModal">Redeem Points</button>
+            <% } %>
           </div>
         </div>
-        <!-- End Media -->
+        <div class="mt-3">
+          <a class="btn btn-primary d-block mb-2" id="dailyRewardBtn" data-bs-toggle="modal" data-bs-target="#dailyrewardmodal">Daily rewards</a>
+          <a class="btn settings-btn d-block" data-bs-toggle="offcanvas" data-bs-target="#settingsOffcanvas" aria-controls="settingsOffcanvas" href="#">
+            <i class="bi bi-gear me-1"></i>Settings
+          </a>
+        </div>
       </div>
     </div>
+      <!-- Modal -->
+      <div id="dailyrewardmodal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dailyrewardmodal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="dailyrewardmodal">Daily reward</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex flex-column align-items-center">
+              <img src="/svg/illustrations/oc-money-profits.svg" />
+              <p class="text-center">Daily reward ready!</p>
+              <button class="btn btn-primary" id="claimDailyReward">Claim daily reward</button>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-white" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+     <!-- Offcanvas -->
+      <div class="offcanvas offcanvas-start" tabindex="-1" id="settingsOffcanvas" aria-labelledby="offcanvasExampleLabel">
+        <div class="offcanvas-header">
+          <h5 class="offcanvas-title" id="offcanvasExampleLabel">Offcanvas</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+          <div>
+            Some text as placeholder. In real life you can have the elements you have chosen. Like, text, images, lists, etc.
+          </div>
+          <div class="dropdown mt-3">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown">
+              Dropdown button
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Action</a></li>
+              <li><a class="dropdown-item" href="#">Another action</a></li>
+              <li><a class="dropdown-item" href="#">Something else here</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
     <!-- End Page Header -->
-
-    <!-- Card Grid -->
-    <div class="container content-space-b-2 content-space-b-lg-3 mt-5">
-      <!-- Nav Scroller -->
-      <div class="js-nav-scroller hs-nav-scroller-horizontal mb-7">
-        <span class="hs-nav-scroller-arrow-prev" style="display: none;">
-          <a class="hs-nav-scroller-arrow-link" href="javascript:;">
-            <i class="bi-chevron-left"></i>
-          </a>
-        </span>
-        <span class="hs-nav-scroller-arrow-next" style="display: none;">
-          <a class="hs-nav-scroller-arrow-link" href="javascript:;">
-            <i class="bi-chevron-right"></i>
-          </a>
-        </span>
-        <!-- Nav -->
-        <ul class="js-filter-options nav nav-segment nav-pills d-flex mx-auto" style="max-width: 30rem;">
-          <li class="nav-item">
-            <a class="nav-link active text-white" href="javascript:;" data-group="all">All</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="javascript:;" data-group="branding">Branding</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="javascript:;" data-group="product">Product</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="javascript:;" data-group="design">Design</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-white" href="javascript:;" data-group="illustration">Illustration</a>
-          </li>
-        </ul>
-        <!-- End Nav -->
-      </div>
-      <!-- End Nav Scroller -->
-
-      <div class="js-shuffle row row-cols-1 row-cols-sm-2 row-cols-md-3">
-        <% items.forEach(function(item) { %>
-          <% if (item.status === "available") { %>
-            <div class="js-shuffle-item col mb-5" data-groups='["all", "<%= item.category %>"]'>
-              <a class="card card-flush card-transition" href="#">
-                <img class="card-img-top" src="<%= item.picture %>" alt="<%= item.name %>">
-                <div class="card-body">
-                  <h5 class="card-title"><%= item.name %></h5>
-                  <p class="card-text">Price: <%= item.price %> USDT</p>
-                  <p class="card-text">Total Amount: <%= item.totalAmount %> USDT</p>
-                  <p class="card-text">Commission: <%= item.commission %> USDT</p>
-                  <!-- Button to trigger modal -->
-                  <button type="button" class="btn btn-primary item-details-button" data-bs-toggle="modal" data-bs-target="#itemDetailsModal" data-item-id="<%= item._id %>">
-                    View Details
-                  </button>
-                </div>
-              </a>
-            </div>
-          <% } %>
-        <% }); %>
-      </div>
-      <!-- End Row -->
-    </div>
-    <!-- End Card Grid -->
-
-    <!-- Modal Structure -->
-    <div class="modal fade" id="itemDetailsModal" tabindex="-1" aria-labelledby="itemDetailsModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="itemDetailsModalLabel">Item Details</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body" id="modalItemDetails">
-            <!-- Item details will be populated here by modalItemDetails.js -->
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-success purchase-button" data-bs-dismiss="modal">Submit</button>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <div class="announcements-section mt-5">
       <h2 class="text-white">Announcements</h2>
@@ -378,73 +310,83 @@
 <script src="/vendor/typed.js/lib/typed.min.js"></script>
 <script src="/js/toastrNotifications.js"></script>
 <script src="/js/modalItemDetails.js" defer></script>
+
+<!-- Lottie Animation Initialization Script -->
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    new HsNavScroller('.js-nav-scroller');
+    // Initialize Lottie animation based on user tier
+    var tier = "<%= user.tier %>";
+    var lottiePath;
+    var avatarSize;
+    var avatarPosition;
 
-    const shuffleInstance = new Shuffle(document.querySelector('.js-shuffle'), {
-      itemSelector: '.js-shuffle-item',
-      speed: 500
-    });
-
-    document.querySelector('.js-filter-options').addEventListener('click', function(event) {
-      if (event.target.classList.contains('nav-link')) {
-        const filterGroup = event.target.getAttribute('data-group');
-        shuffleInstance.filter(filterGroup === 'all' ? Shuffle.ALL_ITEMS : filterGroup);
-        event.target.classList.add('active');
-        Array.from(event.target.parentNode.children).forEach(sibling => sibling.firstElementChild.classList.remove('active'));
-      }
-    });
-
-    document.getElementById('themeSelect').addEventListener('change', function() {
-      const selectedTheme = this.value;
-      fetch('/update-theme', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ theme: selectedTheme }),
-      })
-      .then(response => {
-        if (response.ok) {
-          document.body.className = selectedTheme;
-        } else {
-          alert('Failed to update theme preference.');
-        }
-      })
-      .catch(error => {
-        console.error('Error updating theme preference:', error);
-        alert('Failed to update theme preference.');
-      });
-    });
-
-    // Set initial theme on load
-    document.body.className = '<%= themePreference %>';
-
-    // Handle modal backdrop removal
-    function removeModalBackdrop() {
-      var backdrop = document.querySelector('.modal-backdrop');
-      if (backdrop) {
-        backdrop.remove();
-      }
-      document.body.style.overflow = '';
+    switch(tier) {
+      case 'VIP1':
+        lottiePath = '/Animations/vip1.json';
+        avatarSize = { width: '84px', height: '85px' }; // Adjusted size for VIP1
+        avatarPosition = { top: '50%', transform: 'translate(-50%, -50%)' }; // Adjusted position for VIP1
+        break;
+      case 'VIP2':
+        lottiePath = '/Animations/vip2.json';
+        avatarSize = { width: '95px', height: '95px' }; // Current size for VIP2
+        avatarPosition = { top: '55%', transform: 'translate(-50%, -50%)' }; // Default position for VIP2
+        break;
+      case 'VIP3':
+        lottiePath = '/Animations/vip3.json';
+        avatarSize = { width: '75px', height: '75px' }; // Adjusted size for VIP3
+        avatarPosition = { top: '48%', transform: 'translate(-50%, -50%)' }; // Adjusted position for VIP3
+        break;
+      default:
+        lottiePath = '/Animations/frames.json'; // default frame
+        avatarSize = { width: '90px', height: '90px' }; // Default size
+        avatarPosition = { top: '50%', transform: 'translate(-50%, -50%)' }; // Default position
     }
 
-    var modalElement = document.getElementById('itemDetailsModal');
-    modalElement.addEventListener('hidden.bs.modal', removeModalBackdrop);
+    console.log('Loading Lottie animation from path:', lottiePath);
 
-    // Handle purchase button click
-    document.querySelector('.purchase-button').addEventListener('click', function() {
-      // Simulate purchase logic here
+    // Set avatar size and position
+    var avatar = document.querySelector('.avatar');
+    avatar.style.width = avatarSize.width;
+    avatar.style.height = avatarSize.height;
+    avatar.style.top = avatarPosition.top;
+    avatar.style.transform = avatarPosition.transform;
 
-      // Hide the modal
-      var modal = bootstrap.Modal.getInstance(document.getElementById('itemDetailsModal'));
-      modal.hide();
+    lottie.loadAnimation({
+      container: document.getElementById('lottie-avatar-frame'),
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: lottiePath
+    });
 
-      // Ensure the backdrop is removed
-      removeModalBackdrop();
+    // Handle daily reward claim
+    var dailyRewardBtn = document.getElementById('dailyRewardBtn');
+    var dailyRewardClaimed = <%= dailyRewardClaimed ? 'true' : 'false' %>;
+
+    if (dailyRewardClaimed) {
+      dailyRewardBtn.classList.add('disabled');
+      dailyRewardBtn.innerText = 'Reward claimed';
+    }
+
+    document.getElementById('claimDailyReward').addEventListener('click', function() {
+      fetch('/api/claimDailyReward', { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            toastr.success('Daily reward claimed!');
+            dailyRewardBtn.classList.add('disabled');
+            dailyRewardBtn.innerText = 'Reward claimed';
+          } else {
+            toastr.error('Failed to claim daily reward');
+          }
+        })
+        .catch(error => {
+          console.error('Error claiming daily reward:', error);
+          toastr.error('Failed to claim daily reward');
+        });
     });
   });
 </script>
+
 </body>
 </html>

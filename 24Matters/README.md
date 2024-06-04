@@ -1,6 +1,6 @@
-# 24Matters
+# 42Matters
 
-24Matters is a comprehensive cryptocurrency management platform designed to offer users a wide range of functionalities for managing their cryptocurrency assets effectively. It enables users to view real-time wallet information, engage in tasks to earn cryptocurrency, view detailed transaction history, and access robust customer support within a secure and user-friendly environment.
+42Matters is a comprehensive cryptocurrency management platform designed to offer users a wide range of functionalities for managing their cryptocurrency assets effectively. It enables users to view real-time wallet information, engage in tasks to earn cryptocurrency, view detailed transaction history, and access robust customer support within a secure and user-friendly environment.
 
 ## Overview
 

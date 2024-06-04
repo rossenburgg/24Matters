@@ -53,7 +53,7 @@ router.post('/auth/register', async (req, res) => {
     }
 
     // Send welcome notification
-    await Notification.createNotification(newUser._id, 'Welcome to 24Matters! Your account has been successfully created.');
+    await Notification.createNotification(newUser._id, 'Welcome to 42Matters! Your account has been successfully created.');
 
     req.session.successMessage = 'Registration successful! Please log in.'; // Setting a success message
     res.redirect('/auth/login'); // Redirect to login with success message
@@ -111,8 +111,8 @@ router.get('/auth/setup2fa', async (req, res) => {
       req.session.tempSecret = secret.base32; // Store the secret temporarily in the session
       const otpauthUrl = speakeasy.otpauthURL({
         secret: secret.ascii,
-        label: encodeURIComponent('24Matters:' + user.username),
-        issuer: '24Matters',
+        label: encodeURIComponent('42Matters:' + user.username),
+        issuer: '42Matters',
         encoding: 'ascii'
       });
       qrcode.toDataURL(otpauthUrl, (err, dataUrl) => {

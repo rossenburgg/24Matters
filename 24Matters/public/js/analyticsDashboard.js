@@ -1,46 +1,85 @@
 document.addEventListener('DOMContentLoaded', function() {
-    fetch('/api/analytics/data')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            const ctx = document.getElementById('earningsChart').getContext('2d');
-            const earningsChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: data.labels,
-                    datasets: [{
-                        label: 'Earnings',
-                        data: data.earnings,
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
+    let earningsChart;
+
+    function renderChart(data) {
+        const ctx = document.getElementById('earningsChart').getContext('2d');
+        if (earningsChart) {
+            earningsChart.destroy(); // Destroy existing chart instance
+        }
+        earningsChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.labels,
+                datasets: [{
+                    label: 'Earnings Over Time',
+                    data: data.earnings,
+                    backgroundColor: 'rgba(29, 185, 84, 0.2)',
+                    borderColor: '#1DB954',
+                    borderWidth: 2,
+                    fill: true,
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#E0E0E0'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            color: '#E0E0E0'
+                        }
+                    }
                 },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: {
+                            color: '#E0E0E0'
                         }
                     }
                 }
-            });
+            }
+        });
+    }
 
-            const taskMetricsTable = document.getElementById('taskMetrics');
-            data.tasks.forEach(task => {
-                const row = `<tr>
-                                <td>${task.description}</td>
-                                <td>${task.amountEarned}</td>
-                                <td>${task.commission}</td>
-                                <td>${task.status}</td>
-                             </tr>`;
-                taskMetricsTable.innerHTML += row;
-            });
+    // Fetch analytics data and render chart
+    fetch('/api/analytics/data')
+        .then(response => response.json())
+        .then(data => {
+            console.log('Analytics data:', data); // Debug message
+
+            // Check if data is valid before rendering chart
+            if (data.labels && data.labels.length > 0 && data.earnings && data.earnings.length > 0) {
+                renderChart(data);
+            } else {
+                console.error('Invalid data format for Chart.js:', data); // Debug message
+                toastr.error('Invalid data format for Chart.js');
+            }
+
+            // Populate performance metrics table
+            const taskMetrics = document.getElementById('taskMetrics');
+            if (data.tasks && data.tasks.length > 0) {
+                data.tasks.forEach(task => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${task.description}</td>
+                        <td>${task.amountEarned} USDT</td>
+                        <td>${task.commission} USDT</td>
+                        <td>${task.status}</td>
+                    `;
+                    taskMetrics.appendChild(row);
+                });
+            } else {
+                console.error('Invalid data format for task metrics:', data); // Debug message
+                toastr.error('Invalid data format for task metrics');
+            }
         })
         .catch(error => {
             console.error('Error fetching analytics data:', error);
+            toastr.error('Failed to load analytics data');
         });
 });

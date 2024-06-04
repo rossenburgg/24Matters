@@ -47,4 +47,23 @@ router.get('/analytics/download-report', async (req, res) => {
   }
 });
 
+router.get('/api/analytics/data', async (req, res) => {
+  try {
+    const tasks = await Task.find({});
+    const labels = tasks.map(task => task.creationDate.toISOString().split('T')[0]);
+    const earnings = tasks.map(task => task.amountEarned);
+
+    console.log('Analytics data fetched successfully.');
+    res.json({
+      labels,
+      earnings,
+      tasks // Include tasks details for the performance metrics table
+    });
+  } catch (err) {
+    console.error('Error fetching analytics data:', err.message);
+    console.error(err.stack);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 module.exports = router;
