@@ -190,4 +190,5 @@ server.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
 
-module.exports = { app, server, io };
+// Export the server instance
+module.exports = server;
