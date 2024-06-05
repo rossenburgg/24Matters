@@ -38,7 +38,10 @@ if (!process.env.DATABASE_URL || !process.env.SESSION_SECRET) {
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server, {
+  path: '/socket.io', // Define the path explicitly
+});
+
 const port = process.env.PORT || 3000;
 
 // Middleware to parse request bodies
@@ -53,7 +56,6 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // Serve static files
 app.use(express.static("public"));
-
 
 // Database connection
 mongoose
@@ -112,7 +114,6 @@ io.on('connection', (socket) => {
     console.log('User disconnected');
   });
 
-
   socket.on('register', async (userId) => {
     if (!userId) {
       console.error("Attempt to register socket without userId");
@@ -128,7 +129,6 @@ io.on('connection', (socket) => {
       .catch(error => {
         console.error(`Error fetching initial unread notifications for user ${userId}: ${error}`);
       });
-
 
     try {
       const unreadCount = await Notification.countDocuments({ userId: new ObjectId(userId), read: false });
@@ -234,6 +234,11 @@ app.use((err, req, res, next) => {
 });
 
 // Change the listen method to use the http server
-server.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
+if (!module.parent) {
+  server.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+  });
+}
+
+// Export the server instance
+module.exports = server;
