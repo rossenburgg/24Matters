@@ -50,12 +50,10 @@ app.set("view engine", "ejs");
 // Serve static files
 app.use(express.static("public"));
 
+
 // Database connection
 mongoose
-  .connect(process.env.DATABASE_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  })
+  .connect(process.env.DATABASE_URL)
   .then(() => {
     console.log("Database connected successfully");
   })
@@ -110,6 +108,7 @@ io.on('connection', (socket) => {
     console.log('User disconnected');
   });
 
+
   socket.on('register', async (userId) => {
     if (!userId) {
       console.error("Attempt to register socket without userId");
@@ -125,6 +124,7 @@ io.on('connection', (socket) => {
       .catch(error => {
         console.error(`Error fetching initial unread notifications for user ${userId}: ${error}`);
       });
+
 
     try {
       const unreadCount = await Notification.countDocuments({ userId: new ObjectId(userId), read: false });
