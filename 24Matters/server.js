@@ -185,10 +185,12 @@ app.use((err, req, res, next) => {
   res.status(500).send("There was an error serving your request.");
 });
 
-// Start the server
-server.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
+// Start the server only if it's not already started
+if (!module.parent) {
+  server.listen(port, () => {
+    console.log(`Server running at http://localhost:${port}`);
+  });
+}
 
 // Export the server instance
 module.exports = server;
