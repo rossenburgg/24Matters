@@ -28,6 +28,7 @@ const { Server } = require("socket.io");
 const startingRoutes = require('./routes/startingRoutes'); // Import startingRoutes
 const ObjectId = mongoose.Types.ObjectId; // Correctly use ObjectId from mongoose.Types
 const path = require("path"); // Import path module
+const { initSocketIO } = require('./services/socketManager'); // Import socketManager
 
 require('./scheduler');
 
@@ -38,9 +39,8 @@ if (!process.env.DATABASE_URL || !process.env.SESSION_SECRET) {
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
-  path: '/socket.io', // Define the path explicitly
-});
+const io = initSocketIO(server); // Initialize socket.io
+
 
 const port = process.env.PORT || 3000;
 

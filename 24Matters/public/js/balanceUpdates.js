@@ -1,22 +1,27 @@
-// Establish a connection to the server using socket.io-client
-const socket = io();
+document.addEventListener('DOMContentLoaded', () => {
+  const socket = io();
 
-// Listen for the 'balance update' event from the server
-socket.on('balance update', (data) => {
-  try {
-    // Update the UI with the new balance
+  socket.on('balance update', (data) => {
     const balanceElement = document.getElementById('balance');
-    const commissionElement = document.getElementById('commission'); // Ensure commission element is targeted for updates
+    const commissionElement = document.getElementById('commission');
     if (balanceElement && commissionElement) {
       balanceElement.textContent = data.newBalance + ' USDT';
-      commissionElement.textContent = data.newCommission + ' USDT'; // Update the commission element with new data
-      console.log(`Balance updated to ${data.newBalance} USDT`);
-      console.log(`Commission updated to ${data.newCommission} USDT`); // Log the commission update for clarity
-    } else {
-      console.error('Balance or commission element not found on the page.');
+      commissionElement.textContent = data.newCommission + ' USDT';
     }
-  } catch (error) {
-    console.error('Error updating balance or commission on the client side:', error.message);
-    console.error(error.stack);
-  }
+  });
+
+  // Error handling for WebSocket connection
+  socket.on('connect_error', (err) => {
+    console.error('WebSocket connection error: ', err.message);
+    setTimeout(() => {
+      socket.connect();
+    }, 1000); // Attempt to reconnect after 1 second
+  });
+
+  socket.on('disconnect', () => {
+    console.warn('WebSocket disconnected. Attempting to reconnect...');
+    setTimeout(() => {
+      socket.connect();
+    }, 1000); // Attempt to reconnect after 1 second
+  });
 });

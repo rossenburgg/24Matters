@@ -4,7 +4,12 @@ const Notification = require('../models/Notification');
 let io;
 
 const initSocketIO = (server) => {
-  io = new Server(server);
+  io = new Server(server, {
+    cors: {
+      origin: "*",
+      methods: ["GET", "POST"]
+    }
+  });
   return io;
 };
 
