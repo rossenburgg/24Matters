@@ -115,10 +115,10 @@
     <div class="d-flex">
         <div class="nav flex-column nav-pills sidebar" id="v-pills-tab" role="tablist" aria-orientation="vertical" data-sidebar-status="closed">
             <a class="nav-link active" id="v-pills-home-tab" href="/admin" role="tab"><i class="fas fa-users"></i> Home</a>
-            <a class="nav-link active" id="v-pills-home-tab" href="/admin/users" role="tab"><i class="fas fa-users"></i> User Management</a>
-            <a class="nav-link" id="v-pills-profile-tab" href="/admin/purchases" role="tab"><i class="fas fa-shopping-cart"></i> Purchase Management</a>
-            <a class="nav-link" id="v-pills-messages-tab" href="/admin/announcements" role="tab"><i class="fas fa-bullhorn"></i> Announcements</a>
-            <a class="nav-link" id="v-pills-settings-tab" href="/admin/tasks" role="tab"><i class="fas fa-tasks"></i> Task Management</a>
+            <a class="nav-link" id="v-pills-users-tab" href="/admin/users" role="tab"><i class="fas fa-users"></i> User Management</a>
+            <a class="nav-link" id="v-pills-purchases-tab" href="/admin/purchases" role="tab"><i class="fas fa-shopping-cart"></i> Purchase Management</a>
+            <a class="nav-link" id="v-pills-announcements-tab" href="/admin/announcements" role="tab"><i class="fas fa-bullhorn"></i> Announcements</a>
+            <a class="nav-link" id="v-pills-tasks-tab" href="/admin/tasks" role="tab"><i class="fas fa-tasks"></i> Task Management</a>
             <a class="nav-link" id="v-pills-reports-tab" href="/admin/reports" role="tab"><i class="fas fa-chart-line"></i> Reports</a>
         </div>
         <div class="tab-content" id="v-pills-tabContent">
@@ -186,6 +186,38 @@
                 defaultTab.click();
             }
         });
+
+        function confirmPurchase(purchaseId) {
+            fetch(`/admin/purchase/${purchaseId}/confirm`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        alert('Failed to confirm purchase.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error confirming purchase:', error);
+                    alert('Error confirming purchase.');
+                });
+        }
+
+        function rejectPurchase(purchaseId) {
+            fetch(`/admin/purchase/${purchaseId}/reject`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload();
+                    } else {
+                        alert('Failed to reject purchase.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error rejecting purchase:', error);
+                    alert('Error rejecting purchase.');
+                });
+        }
     </script>
 </body>
 </html>
