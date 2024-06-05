@@ -168,17 +168,10 @@
   </div>
 </header>
 
-<script src="/socket.io/socket.io.js"></script>
+<script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    const socket = io({
-  path: '/socket.io/',
-  transports: ['websocket']
-});
-
-socket.on('connect', () => {
-  console.log('Connected to server');
-});
+    const socket = io();
     const notificationIcon = document.getElementById('notificationIcon');
     const notificationDropdown = document.getElementById('notificationDropdown');
     const notificationCount = document.getElementById('notificationCount');

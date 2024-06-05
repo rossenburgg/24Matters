@@ -38,14 +38,7 @@ if (!process.env.DATABASE_URL || !process.env.SESSION_SECRET) {
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, {
-  path: '/socket.io/',
-  cors: {
-    origin: process.env.APP_BASE_URL,
-    methods: ["GET", "POST"]
-  }
-});
-
+const io = new Server(server);
 const port = process.env.PORT || 3000;
 
 // Middleware to parse request bodies
