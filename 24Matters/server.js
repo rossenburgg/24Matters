@@ -27,6 +27,7 @@ const http = require('http');
 const { Server } = require("socket.io");
 const startingRoutes = require('./routes/startingRoutes'); // Import startingRoutes
 const ObjectId = mongoose.Types.ObjectId; // Correctly use ObjectId from mongoose.Types
+const path = require("path"); // Import path module
 
 require('./scheduler');
 
