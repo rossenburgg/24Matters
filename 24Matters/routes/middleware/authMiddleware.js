@@ -6,7 +6,7 @@ const isAuthenticated = async (req, res, next) => {
       const user = await User.findById(req.session.userId);
       if (!user) {
         console.error("User not found in database.");
-        return res.status(401).send('You are not authenticated');
+        return res.redirect('/login'); // Redirect to login page
       }
       res.locals.themePreference = user.themePreference;
       console.log("User is authenticated, proceeding to the next middleware/route handler.");
@@ -17,7 +17,7 @@ const isAuthenticated = async (req, res, next) => {
     }
   } else {
     console.error("User is not authenticated. Redirecting to login.");
-    return res.status(401).send('You are not authenticated'); // User is not authenticated
+    return res.redirect('auth/login'); // Redirect to login page
   }
 };
 

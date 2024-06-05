@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html lang="en" dir="" class="h-100">
 <head>
@@ -21,6 +19,43 @@
 
   <!-- CSS Front Template -->
   <%- include('partials/_head.ejs') %>
+
+  <style>
+    .form-control {
+      background-color: #ffffff !important;
+      color: #000000 !important;
+      border: 1px solid #ced4da !important;
+    }
+    .form-control::placeholder {
+      color: #6c757d !important;
+    }
+    .form-control:focus {
+      background-color: #ffffff !important;
+      color: #000000 !important;
+      border-color: #80bdff !important;
+      outline: 0;
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25) !important;
+    }
+    .input-group-append .input-group-text {
+      background-color: #ffffff !important;
+      border: 1px solid #ced4da !important;
+      border-left: 0 !important;
+    }
+    .loader {
+      display: none;
+      border: 8px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 8px solid #1DB954;
+      width: 40px;
+      height: 40px;
+      animation: spin 2s linear infinite;
+      margin: 0 auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 
 <body class="d-flex align-items-center min-h-100 bg-white">
@@ -40,8 +75,8 @@
         <!-- End Default Logo -->
 
         <div class="ms-auto">
-          <a class="link link-sm link-secondary" href="./index.html">
-            <i class="bi-chevron-left small ms-1"></i> Go to main
+          <a class="link link-sm link-secondary" href="#" id="confettiLink">
+            <i class="bi-chevron-left small ms-1"></i> Confetti
           </a>
         </div>
       </nav>
@@ -60,7 +95,7 @@
                 <img class="avatar avatar-xl avatar-4x3" src="/svg/brands/mailchimp-white.svg" alt="Logo">
               </div>
 
-              <blockquote class="blockquote blockquote-light">“ It has many landing page variations to choose from, which one is always a big advantage. ”</blockquote>
+              <blockquote class="blockquote blockquote-light">“ I have been using 42Matters as a part time and I never regretted ”</blockquote>
 
               <figcaption class="blockquote-footer blockquote-light">
                 <div class="mb-3">
@@ -118,7 +153,9 @@
                 <%= successMessage %>
               </div>
             <% } %>
-            <form action="/auth/login" method="POST" class="js-validate needs-validation" >
+            <div class="loader" id="loader"></div>
+
+            <form action="/auth/login" method="POST" class="js-validate needs-validation">
               <!-- Form -->
               <div class="mb-4">
                 <label class="form-label" for="signupModalFormLoginUsername">Your username</label>
@@ -170,6 +207,8 @@
     <!-- End Form -->
   </main>
 
+  <!-- Confetti Animation -->
+  <canvas id="confetti-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></canvas>
 
   <!-- JS Global Compulsory  -->
   <script src="/vendor/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -180,17 +219,28 @@
   <!-- JS Front -->
   <script src="/js/theme.min.js"></script>
 
+  <!-- Confetti JS -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
   <!-- JS Plugins Init. -->
   <script>
     (function() {
       HSBsValidation.init('.js-validate', {
         onSubmit: data => {
-          
-          alert('Submited')
+          document.getElementById('loader').style.display = 'block';
+          // You can add additional actions here if needed, such as making an API call
         }
       })
       new HSTogglePassword('.js-toggle-password')
     })()
+
+    document.getElementById('confettiLink').addEventListener('click', function(event) {
+      event.preventDefault();
+      confetti({
+        particleCount: 200,
+        spread: 60
+      });
+    });
   </script>
 </body>
 </html>
